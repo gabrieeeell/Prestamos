@@ -50,9 +50,9 @@ async def insertarMonto(monto: int = None, dias : int = None, nombre : str = Non
 
     fechaFinal = str(fechaActual + timedelta(days=dias))
 
-    detalles = detalles.replace(" ","%20")
+    #detalles = detalles.replace(" ","%20")   #Esta wea antes era necesaria para que hubieran espacios, ns q wea paso q ya no
 
-    nombre = nombre.replace(" ","%20")
+    #nombre = nombre.replace(" ","%20")     #Esta wea antes era necesaria para que hubieran espacios, ns q wea paso q ya no
 
     prestamoDict = {"Cobro final":cobroFinal, "Fecha final":fechaFinal, "Nombre":nombre, "Detalles":detalles}
 
