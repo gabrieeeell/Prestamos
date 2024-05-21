@@ -66,12 +66,10 @@ const Lista = () => {
   const [confirmarFinalizacionIsOpen, setConfirmarFinalizacionIsOpen] = useState(false)
   const [indexConfirmarFinalizacion, setIndexConfirmarFinalizacion] = useState(0)
 
-  // Buscador
-
 
   //Ventana que se abre al apretar el ticket
 
-  const ConfirmarFinalizarPrestamo = ({isOpen = false, index = 777}) => {
+  const ConfirmarFinalizarPrestamo = ({isOpen = false, index = 7777}) => {
   
     if (!isOpen) return null;
   
@@ -84,12 +82,53 @@ const Lista = () => {
     )
   }
 
+  //Boton Nuevo prestamo
+
+  const BotonNuevoPrestamo = () => {
+
+    return (
+      <button onClick={() => setVentanaNuevoPrestamoIsOpen(true)}>Nuevo Prestamo</button>
+    )
+  }
+
+  //Ventana Nuevo Prestamo
+
+  const VentanaNuevoPrestamo = ({isOpen = false}) => {
+
+    if (!isOpen) return null;
+
+    return (
+      <div className='ventanaNuevoPrestamoDiv'>
+        <form>
+          <div className='divNombreNuevoPrestamo'>
+            <span>Nombre: </span>
+            <input></input>
+          </div>
+          <div className='divTipoCobro'>
+            <span>Tipo de cobro: </span>
+            <form action="http://127.0.0.1:8000/insertarMonto/ todavia no esta estructurado" method='POST'>
+                <select id="opciones" name="opciones">
+                    <option value="opcion1">Opción 1</option>
+                    <option value="opcion2">Opción 2</option>
+                </select>
+            </form>
+          </div>
+        </form>
+      </div>
+    )
+  }
+
+  const[ventanaNuevoPrestamoIsOpen,setVentanaNuevoPrestamoIsOpen] = useState(false)
+  
+
   const [nombreBuscador, cambiarNombreBuscador] = useState("");
+
   //Lista de prestamos
 
   return (
     <>
     <Buscador nombreBuscador={nombreBuscador} cambiarNombreBuscador={cambiarNombreBuscador}/>
+    <BotonNuevoPrestamo/>
     <ul>
       {prestamos.map((prestamo, index) => {
         if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
@@ -105,6 +144,7 @@ const Lista = () => {
       })}
     </ul>
     <ConfirmarFinalizarPrestamo isOpen={confirmarFinalizacionIsOpen} index={indexConfirmarFinalizacion}/>
+    <VentanaNuevoPrestamo isOpen={ventanaNuevoPrestamoIsOpen}/>
   </>
   )
 }

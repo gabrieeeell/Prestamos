@@ -15,19 +15,21 @@ app.add_middleware(
 )
 
 """Orden"""
-#Aprender a guardar las versiones en git seria buena idea
+#Como usar form para hacer el nuevo prestamo
+# (haciendo)Tengo que ver de que formas puedo dar fechas directamente desde typescript/react por que tengo que hacer la ventana de nuevo prestamo
+#Pestaña
 #Css
 
 """Ideas"""
+#La funcion obtener prestamos deberia venir con una funcion que actualiza los precios
 #Separar la wea por modulos pq ya esta quedando mucho en un solo archivo (Me quedo grande esta tarea)
 #Taria bueno que en vez de ingresar los dias te salga un calendario de la fecha en la que se deberia devolver
 #Cuando un prestamo se pasa de su fecha de devolución, este cambie de color y empieze a sumar al monto
 #Haya una parte de configuración del prestamo que te deje cambiar el interes, lo que pasa cuando se vence el plazo, etc
 #Cada prestamo deberia tener un ticket para que desaparezca, una vez se aprete el ticket, estos se deberian ir a un historial
 #porciacaso
-#En la config de prestamo, un cobro fijo o que se actualize dia a dia, en vola sin fecha
-#Barra de busqueda
 #Los prestamos se deberian ordenar por fecha limite
+#Si se selecciona cobro de tipo acomulativo
 
 fechaActual = datetime.now().date()
 
@@ -39,8 +41,8 @@ def diasRestantes (fecha):
 
     return restantes
 
-@app.post("/insertarMonto/{monto}/{dias}/{nombre}/{detalles}")
-async def insertarMonto(monto: int = None, dias : int = None, nombre : str = None, detalles : str = None):
+@app.post("/insertarMonto/{monto}/{dias}/{nombre}/{detalles},")
+async def insertarMonto(monto: int = None, dias : int = None, nombre : str = None, detalles : str = None, tipoCobro : str = None):
      
     porcentajeCobroSimple = 0.05           #Para modificar esto desde la interfaz de react, podria hacer que fuera un argumento que se pasa desde el Query o que sea una variable que se maneja en otro @post (osea igual usuaria en query pero en otra función)
 
