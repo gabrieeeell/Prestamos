@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import axios from "axios";
+import Select, { SingleValue } from "react-select"
 
 const NuevoPrestamo = () => {
   return (
@@ -61,6 +62,10 @@ const Lista = () => {
     setConfirmarFinalizacionIsOpen(false)
   }
 
+  async function crearPrestamo (montoInicial:number,nombrePrestamo:string,diasRestantesPrestamo:number,fechaLimitePrestamo:string,tipoAcumulacion:string,cadaCuantosDiasAcumula:number,acumulacionPorcentual:number,acumulacionFija:number){
+
+  }
+
   //States que manejan cuando abre la ventana de confirmar y ayudan a enviarle el index que se tiene que borrar
 
   const [confirmarFinalizacionIsOpen, setConfirmarFinalizacionIsOpen] = useState(false)
@@ -91,7 +96,34 @@ const Lista = () => {
     )
   }
 
+  //useState para ver si la sección fechaLimite o acomulativo esta seleccionada
+
+  const [fechaLimiteOAcumulativoSelected, setFechaLimiteOAcumulativoSelected] = useState("Fecha limite")
+
+  //Logica necesaria para que el option funcione
+
+  const opcionesFechaOAcumulativo = [
+    {label:"Fecha limite", value:"Fecha limite"},
+    {label:"Acumulativo", value:"Acumulativo"}
+  ]
+
+  const selectFechaLimiteOAcumulativo = (event:SingleValue<{label:string;value:string}>,) => {
+
+    if (event.value == "Fecha limite") {
+
+      setFechaLimiteOAcumulativoSelected("Fecha limite")
+
+    } else if (event.value == "Acumulativo") {
+
+      setFechaLimiteOAcumulativoSelected("Acumulativo")
+
+    }
+
+  }
+
   //Ventana Nuevo Prestamo
+
+
 
   const VentanaNuevoPrestamo = ({isOpen = false}) => {
 
@@ -99,22 +131,33 @@ const Lista = () => {
 
     return (
       <div className='ventanaNuevoPrestamoDiv'>
-        <form>
           <div className='divNombreNuevoPrestamo'>
             <span>Nombre: </span>
             <input></input>
           </div>
           <div className='divTipoCobro'>
             <span>Tipo de cobro: </span>
-            <form action="http://127.0.0.1:8000/insertarMonto/ todavia no esta estructurado" method='POST'>
-                <select id="opciones" name="opciones">
-                    <option value="opcion1">Opción 1</option>
-                    <option value="opcion2">Opción 2</option>
-                </select>
-            </form>
+              <Select options={opcionesFechaOAcumulativo} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
           </div>
-        </form>
+
+          <SeccionFechaLimiteOAcumulativo fechaLimiteIsSelected = {fechaLimiteOAcumulativoSelected}/>
+
       </div>
+    )
+  }
+
+  // Fecha limite o acomulativo sección de ventana nuevo prestamo
+  //Tengo que ver si esto de abrir como una "ventana dentro de otra" no genera problemas como que la ventana interna
+  //este abierta sin que lo este la más externa, o por su cuenta se necesita que la ventana externa este abierta
+  //para que funcione esta
+
+  const SeccionFechaLimiteOAcumulativo = ({fechaLimiteIsSelected = "Fecha limite"}) =>{
+
+    if (fechaLimiteIsSelected == "Acumulativo") return null;
+
+    return (
+      //Recuerda que aca tienes que poner un componente que se va a repetir
+      <div className='seccionFechaLimiteSelected'>Todo bien</div>
     )
   }
 

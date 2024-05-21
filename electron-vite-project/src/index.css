@@ -4,3 +4,6 @@
 .VentanaNuevoPrestamoDiv {
     background-color: bisque;
 }
+.seccionFechaLimiteSelected {
+    background-color: green;
+}
