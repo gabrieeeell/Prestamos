@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import axios from "axios";
 import Select, { SingleValue } from "react-select"
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const NuevoPrestamo = () => {
   return (
@@ -118,7 +120,6 @@ const Lista = () => {
       setFechaLimiteOAcumulativoSelected("Acumulativo")
 
     }
-
   }
 
   // useState para guardar lo que se ponga en el Nombre
@@ -153,17 +154,59 @@ const Lista = () => {
   //este abierta sin que lo este la más externa, o por su cuenta se necesita que la ventana externa este abierta
   //para que funcione esta
 
+  //useStates para que se guarden: Fecha seleccionada, dias para la devolución, si debe mostrarse el div de aumentar cobro
+
+  const [fechaNuevoPrestamo,setFechaNuevoPrestamo] = useState(new Date())
+
+  const [diasParaLaDevolucion, setDiasParaLaDevolucion] = useState(0)
+
+  const [aumentarCobroIsOpen,setAumentarCobroIsOpen] = useState("Dejar cobro fijo");
+
+  const opcionesFijoOAumentar = [
+    {label:"Dejar cobro fijo",value:"Dejar cobro fijo"},
+    {label:"Aumentar cobro",value:"Aumentar cobro"}
+  ]
+
+  const selectFijoOAumentar = (event:SingleValue<{label:string;value:string}>,) => {
+
+    if (event.value == "Dejar cobro fijo") {
+
+      setAumentarCobroIsOpen("Dejar cobro fijo")
+
+    } else if (event.value == "Aumentar cobro") {
+
+      setAumentarCobroIsOpen("Aumentar cobro")
+
+    }
+
+  }
+
   const SeccionFechaLimiteOAcumulativo = ({fechaLimiteIsSelected = "Fecha limite"}) =>{
 
-    if (fechaLimiteIsSelected == "Acumulativo") return null;//Recuerda que aca tienes que poner un componente que se va a repetir
+    if (fechaLimiteIsSelected == "Acumulativo") return null;//componente aumento cobro
+
+    const filtroDiasPasados = (date:Date) => new Date() <= date
 
     return (
       <div className='seccionFechaLimiteSelected'>
         <div className="divFechaLimiteODias">
-          <span>Fecha Limite</span>
-          
+          <DatePicker selected={fechaNuevoPrestamo} filterDate={filtroDiasPasados} onChange={(date:Date) => setFechaNuevoPrestamo(date)}/>
+          <span> o Dias:</span>
+          <input defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))}></input>
+          <span>Acción al pasarse la fecha:</span>
+          <Select options={opcionesFijoOAumentar} onChange={(event) => selectFijoOAumentar(event)} defaultValue={{label:aumentarCobroIsOpen,value:aumentarCobroIsOpen}}/>
+          {/*componente aumento cobro*/}
+          <DivAumentoCobro aumentarCobroIsOpen = {aumentarCobroIsOpen}/>
         </div>
       </div>
+    )
+  }
+
+  const DivAumentoCobro = ({aumentarCobroIsOpen = "Dejar cobro fijo"}) => {
+    if (aumentarCobroIsOpen == "Dejar cobro fijo") return null;
+
+    return (
+      <div>Esta esta esta</div>
     )
   }
 
