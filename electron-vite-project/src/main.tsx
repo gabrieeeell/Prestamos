@@ -64,7 +64,18 @@ const Lista = () => {
     setConfirmarFinalizacionIsOpen(false)
   }
 
-  async function crearPrestamo (montoInicial:number,nombrePrestamo:string,diasRestantesPrestamo:number,fechaLimitePrestamo:string,tipoAcumulacion:string,cadaCuantosDiasAcumula:number,acumulacionPorcentual:number,acumulacionFija:number){
+  async function crearPrestamo (
+    nombrePrestamo:string,
+    tipoCobro:string,
+    fechaLimitePrestamo:Date,
+    diasParaDevolucion:number,
+    cobroFinal:number,
+    opcionCobroFinal:string,
+    cobroInicial:number,
+    cadaCuantosDiasAumenta:number,
+    acumulacionFija:number,
+    acumulacionPorcentual:number
+  ){
 
   }
 
@@ -142,7 +153,9 @@ const Lista = () => {
           </div>
 
           <SeccionFechaLimiteOAcumulativo fechaLimiteIsSelected = {fechaLimiteOAcumulativoSelected}/>
-
+          <div className="divBotonCrearNuevoPrestamo">
+            <button onClick={() => crearPrestamo(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamo,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual)}>Crear nuevo prestamo</button>
+          </div>
       </div>
     )
   }
@@ -229,9 +242,13 @@ const Lista = () => {
     )
   }
 
-  //State que guarda: cada cuantos dias aumentar el cobro,
+  //State que guarda: cada cuantos dias aumentar el cobro, el aumento fijo
 
   const [cadaCuantosDias,setCadaCuantosDias] = useState(1)
+
+  const [aumentoFijo,setAumentoFijo] = useState(0)
+
+  const [aumentoPorcentual,setAumentoPorcentual] = useState(0)
 
   const DivAumentoCobro = ({aumentarCobroIsOpen = "Dejar cobro fijo"}) => {
     if (aumentarCobroIsOpen == "Dejar cobro fijo") return null;
@@ -243,7 +260,14 @@ const Lista = () => {
           <span>Cada cuantos días:</span>
           <input defaultValue={cadaCuantosDias} onBlur={(event) => setCadaCuantosDias(Number(event.target.value))}></input>
         </div>
-        
+        <div>
+          <span>Aumento fijo:</span>
+          <input defaultValue={aumentoFijo} onBlur={(event) => setAumentoFijo(Number(event.target.value))}></input>
+        </div>
+        <div>
+          <span>Aumento porcentual:  %</span>
+          <input defaultValue={aumentoPorcentual} onBlur={(event) => setAumentoPorcentual(Number(event.target.value))}></input>
+        </div>
       </div>
     )
   }
