@@ -121,9 +121,11 @@ const Lista = () => {
 
   }
 
+  // useState para guardar lo que se ponga en el Nombre
+
+  const [nombreNuevoPrestamo,setNombreNuevoPrestamo] = useState("")
+
   //Ventana Nuevo Prestamo
-
-
 
   const VentanaNuevoPrestamo = ({isOpen = false}) => {
 
@@ -133,10 +135,10 @@ const Lista = () => {
       <div className='ventanaNuevoPrestamoDiv'>
           <div className='divNombreNuevoPrestamo'>
             <span>Nombre: </span>
-            <input></input>
+            <input defaultValue={nombreNuevoPrestamo} onBlur={(e) => setNombreNuevoPrestamo(e.target.value)}></input>
           </div>
           <div className='divTipoCobro'>
-            <span>Tipo de cobro: </span>
+            <span>Tipo de cobro: </span>                          
               <Select options={opcionesFechaOAcumulativo} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
           </div>
 
@@ -153,11 +155,15 @@ const Lista = () => {
 
   const SeccionFechaLimiteOAcumulativo = ({fechaLimiteIsSelected = "Fecha limite"}) =>{
 
-    if (fechaLimiteIsSelected == "Acumulativo") return null;
+    if (fechaLimiteIsSelected == "Acumulativo") return null;//Recuerda que aca tienes que poner un componente que se va a repetir
 
     return (
-      //Recuerda que aca tienes que poner un componente que se va a repetir
-      <div className='seccionFechaLimiteSelected'>Todo bien</div>
+      <div className='seccionFechaLimiteSelected'>
+        <div className="divFechaLimiteODias">
+          <span>Fecha Limite</span>
+          
+        </div>
+      </div>
     )
   }
 

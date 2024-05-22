@@ -15,7 +15,6 @@ app.add_middleware(
 )
 
 """Orden"""
-#Hacer select en algun archivo de prueba y luego pasarlo al programa real
 #Como introducir fecha en la ventana nuevo prestamo
 # (haciendo)Tengo que ver de que formas puedo dar fechas directamente desde typescript/react por que tengo que hacer la ventana de nuevo prestamo
 #Pestaña
