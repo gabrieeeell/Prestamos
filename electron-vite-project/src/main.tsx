@@ -76,7 +76,10 @@ const Lista = () => {
     acumulacionFija:number,
     acumulacionPorcentual:number
   ){
+    await axios.post(
+      `http://127.0.0.1:8000/insertarMonto/${nombrePrestamo}/${tipoCobro}/${fechaLimitePrestamo}/${diasParaDevolucion}/${cobroFinal}/${opcionCobroFinal}/${cobroInicial}/${cadaCuantosDiasAumenta}/${acumulacionFija}/${acumulacionPorcentual}`)
 
+    obtenerPrestamos()
   }
 
   //States que manejan cuando abre la ventana de confirmar y ayudan a enviarle el index que se tiene que borrar
@@ -168,7 +171,7 @@ const Lista = () => {
   //useStates para que se guarden: Fecha seleccionada, dias para la devolución, si debe mostrarse el div de aumentar cobro
   //, el cobro
 
-  const [fechaNuevoPrestamo,setFechaNuevoPrestamo] = useState(new Date())
+  const [fechaNuevoPrestamo,setFechaNuevoPrestamo] = useState(new Date()) 
 
   const [diasParaLaDevolucion, setDiasParaLaDevolucion] = useState(0)
 
@@ -208,7 +211,7 @@ const Lista = () => {
       <div className='seccionFechaLimiteSelected'>
         <div className="divFechaLimiteODias">
           <div>
-            <DatePicker selected={fechaNuevoPrestamo} filterDate={filtroDiasPasados} onChange={(date:Date) => setFechaNuevoPrestamo(date)}/>
+            <DatePicker selected={fechaNuevoPrestamo} dateFormat={"dd-MM-yyyy"} filterDate={filtroDiasPasados} onChange={(date:Date) => setFechaNuevoPrestamo(date)}/>
             <span> o Dias:</span>
             <input defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))}></input>
           </div>

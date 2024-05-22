@@ -42,20 +42,16 @@ def diasRestantes (fecha):
 
     return restantes
 
-@app.post("/insertarMonto/{monto}/{dias}/{nombre}/{detalles},")
-async def insertarMonto(monto: int = None, dias : int = None, nombre : str = None, detalles : str = None, tipoCobro : str = None):
-     
-    porcentajeCobroSimple = 0.05           #Para modificar esto desde la interfaz de react, podria hacer que fuera un argumento que se pasa desde el Query o que sea una variable que se maneja en otro @post (osea igual usuaria en query pero en otra función)
+#nombre.replace(" ","%20") vo sai si lo necesitai usar
 
-    cobroPorDia = monto*porcentajeCobroSimple
+@app.post("/insertarMonto/{nombrePrestamo}/{tipoCobro}/{fechaLimitePrestamo}/{diasParaDevolucion}/{cobroFinal}/{opcionCobroFinal}/{cobroInicial}/{cadaCuantosDiasAumenta}/{acumulacionFija}/{acumulacionPorcentual}")
+async def insertarMonto(                               #Este en vola da problemas
+    nombrePrestamo: str = None, tipoCobro : str = None, fechaLimitePrestamo : str = None, diasParaDevolucion : int = None, cobroFinal: int = None,
+    opcionCobroFinal : str = None, cobroInicial : int = None, cadaCuantosDiasAumenta : int = None,acumulacionFija : int = None,acumulacionPorcentual : int = None):
 
-    cobroFinal = monto + cobroPorDia*dias
+    print(fechaLimitePrestamo)
 
-    fechaFinal = str(fechaActual + timedelta(days=dias))
-
-    #detalles = detalles.replace(" ","%20")   #Esta wea antes era necesaria para que hubieran espacios, ns q wea paso q ya no
-
-    #nombre = nombre.replace(" ","%20")     #Esta wea antes era necesaria para que hubieran espacios, ns q wea paso q ya no
+    return None
 
     prestamoDict = {"Cobro final":cobroFinal, "Fecha final":fechaFinal, "Nombre":nombre, "Detalles":detalles}
 
