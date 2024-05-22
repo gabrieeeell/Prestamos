@@ -137,10 +137,8 @@ const Lista = () => {
           <div className='divNombreNuevoPrestamo'>
             <span>Nombre: </span>
             <input defaultValue={nombreNuevoPrestamo} onBlur={(e) => setNombreNuevoPrestamo(e.target.value)}></input>
-          </div>
-          <div className='divTipoCobro'>
             <span>Tipo de cobro: </span>                          
-              <Select options={opcionesFechaOAcumulativo} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
+            <Select className='select' options={opcionesFechaOAcumulativo} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
           </div>
 
           <SeccionFechaLimiteOAcumulativo fechaLimiteIsSelected = {fechaLimiteOAcumulativoSelected}/>
@@ -155,12 +153,15 @@ const Lista = () => {
   //para que funcione esta
 
   //useStates para que se guarden: Fecha seleccionada, dias para la devolución, si debe mostrarse el div de aumentar cobro
+  //, el cobro
 
   const [fechaNuevoPrestamo,setFechaNuevoPrestamo] = useState(new Date())
 
   const [diasParaLaDevolucion, setDiasParaLaDevolucion] = useState(0)
 
   const [aumentarCobroIsOpen,setAumentarCobroIsOpen] = useState("Dejar cobro fijo");
+
+  const [cobro,setCobro] = useState(Number())
 
   const opcionesFijoOAumentar = [
     {label:"Dejar cobro fijo",value:"Dejar cobro fijo"},
@@ -183,16 +184,25 @@ const Lista = () => {
 
   const SeccionFechaLimiteOAcumulativo = ({fechaLimiteIsSelected = "Fecha limite"}) =>{
 
-    if (fechaLimiteIsSelected == "Acumulativo") return null;//componente aumento cobro
+    if (fechaLimiteIsSelected == "Acumulativo") {
+      return (<DivAumentoCobro aumentarCobroIsOpen = {"Aumentar cobro"}/>)
+      
+    }
 
     const filtroDiasPasados = (date:Date) => new Date() <= date
 
     return (
       <div className='seccionFechaLimiteSelected'>
         <div className="divFechaLimiteODias">
-          <DatePicker selected={fechaNuevoPrestamo} filterDate={filtroDiasPasados} onChange={(date:Date) => setFechaNuevoPrestamo(date)}/>
-          <span> o Dias:</span>
-          <input defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))}></input>
+          <div>
+            <DatePicker selected={fechaNuevoPrestamo} filterDate={filtroDiasPasados} onChange={(date:Date) => setFechaNuevoPrestamo(date)}/>
+            <span> o Dias:</span>
+            <input defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))}></input>
+          </div>
+          <div>
+            <span>Cobro:</span>
+            <input defaultValue={cobro} onBlur={(event) => setCobro(Number(event.target.value))}></input>
+          </div>
           <span>Acción al pasarse la fecha:</span>
           <Select options={opcionesFijoOAumentar} onChange={(event) => selectFijoOAumentar(event)} defaultValue={{label:aumentarCobroIsOpen,value:aumentarCobroIsOpen}}/>
           {/*componente aumento cobro*/}
@@ -202,11 +212,39 @@ const Lista = () => {
     )
   }
 
+  //State para guardar el cobro inicial
+
+  const [cobroInicial, setCobroInicial] = useState(0)
+
+  // Veo que se selecciono en fechaLimiteOAcumulativoSelected para ver si tengo que ver un cobro incial o no (en excalidraw es claro)
+
+  const CobroInicial = ({cobroInicialIsOpen = "Fecha limite"}) => {
+    if (cobroInicialIsOpen == "Fecha limite") return null;
+
+    return (
+      <div>
+        <span>Cobro inicial</span>
+        <input defaultValue={cobroInicial} onBlur={(event) => setCobroInicial(Number(event.target.value))}></input>
+      </div>
+    )
+  }
+
+  //State que guarda: cada cuantos dias aumentar el cobro,
+
+  const [cadaCuantosDias,setCadaCuantosDias] = useState(1)
+
   const DivAumentoCobro = ({aumentarCobroIsOpen = "Dejar cobro fijo"}) => {
     if (aumentarCobroIsOpen == "Dejar cobro fijo") return null;
 
     return (
-      <div>Esta esta esta</div>
+      <div>
+        <CobroInicial cobroInicialIsOpen = {fechaLimiteOAcumulativoSelected}/>
+        <div>
+          <span>Cada cuantos días:</span>
+          <input defaultValue={cadaCuantosDias} onBlur={(event) => setCadaCuantosDias(Number(event.target.value))}></input>
+        </div>
+        
+      </div>
     )
   }
 
