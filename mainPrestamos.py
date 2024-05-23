@@ -34,13 +34,16 @@ app.add_middleware(
 
 fechaActual = datetime.now().date()
 
-def diasRestantes (fecha):
+def diasRestantes (tipoCobro,opcionCobroFinal,fechaFinal):
 
-    fechaDatetime = datetime.strptime(fecha, "%Y-%m-%d").date()
+    if (tipoCobro == "Fecha limite" and opcionCobroFinal == "Dejar cobro fijo") or (tipoCobro == "Fecha limite" and int(str(datetime.strptime(fechaFinal, "%Y-%m-%d").date() - fechaActual)[:-13]) >= 0 ):
+        return ""
 
-    restantes = str(fechaDatetime - fechaActual)[:-13] + "dias"
+    #fechaDatetime = datetime.strptime(fecha, "%Y-%m-%d").date()
 
-    return restantes
+    #restantes = str(fechaDatetime - fechaActual)[:-13] + "dias"
+
+    
 
 #nombre.replace(" ","%20") vo sai si lo necesitai usar
 
@@ -63,7 +66,7 @@ async def insertarMonto(
 async def obtenerDatos():
     # Convertir ObjectId a str para cada documento
     todosLosPrestamos = [
-        {**prestamo, "_id": str(prestamo["_id"]),"Dias restantes":diasRestantes(prestamo["Fecha final"])}  # Convertir ObjectId a str
+        {"Nombre":prestamo["Nombre"], "_id": str(prestamo["_id"]),"Dias restantes":diasRestantes(prestamo["Fecha final"])}  # Convertir ObjectId a str
         for prestamo in dbClient.local.prestamos.find()
     ]
     return todosLosPrestamos
