@@ -45,19 +45,19 @@ def diasRestantes (fecha):
 #nombre.replace(" ","%20") vo sai si lo necesitai usar
 
 @app.post("/insertarMonto/{nombrePrestamo}/{tipoCobro}/{fechaLimitePrestamo}/{diasParaDevolucion}/{cobroFinal}/{opcionCobroFinal}/{cobroInicial}/{cadaCuantosDiasAumenta}/{acumulacionFija}/{acumulacionPorcentual}")
-async def insertarMonto(                               #Este en vola da problemas
+async def insertarMonto(                               
     nombrePrestamo: str = None, tipoCobro : str = None, fechaLimitePrestamo : str = None, diasParaDevolucion : int = None, cobroFinal: int = None,
     opcionCobroFinal : str = None, cobroInicial : int = None, cadaCuantosDiasAumenta : int = None,acumulacionFija : int = None,acumulacionPorcentual : int = None):
 
-    print(fechaLimitePrestamo)
+    fechaLimitePrestamo = str((datetime.strptime(fechaLimitePrestamo, "%d/%m/%Y") + timedelta(days=diasParaDevolucion)).date()) #Esta como al revez por dedcirlo asi de como se lo pasa react
 
-    return None
-
-    prestamoDict = {"Cobro final":cobroFinal, "Fecha final":fechaFinal, "Nombre":nombre, "Detalles":detalles}
+    prestamoDict = {
+        "Nombre":nombrePrestamo, "Tipo cobro":tipoCobro, "Fecha limite":fechaLimitePrestamo, "Cobro final":cobroFinal, "Opción cobro final":opcionCobroFinal,
+        "Cobro inical":cobroInicial,"Cada cuantos dias aumenta":cadaCuantosDiasAumenta,"Acumulación fija":acumulacionFija,"Acumulación porcentual":acumulacionPorcentual}
 
     dbClient.local.prestamos.insert_one(prestamoDict)
 
-    return cobroFinal, fechaFinal
+    return nombrePrestamo, fechaLimitePrestamo
 
 @app.get("/obtenerPrestamos")
 async def obtenerDatos():

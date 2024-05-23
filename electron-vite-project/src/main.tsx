@@ -5,6 +5,7 @@ import axios from "axios";
 import Select, { SingleValue } from "react-select"
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { format } from 'date-fns';
 
 const NuevoPrestamo = () => {
   return (
@@ -67,7 +68,7 @@ const Lista = () => {
   async function crearPrestamo (
     nombrePrestamo:string,
     tipoCobro:string,
-    fechaLimitePrestamo:Date,
+    fechaLimitePrestamo:string,
     diasParaDevolucion:number,
     cobroFinal:number,
     opcionCobroFinal:string,
@@ -157,7 +158,7 @@ const Lista = () => {
 
           <SeccionFechaLimiteOAcumulativo fechaLimiteIsSelected = {fechaLimiteOAcumulativoSelected}/>
           <div className="divBotonCrearNuevoPrestamo">
-            <button onClick={() => crearPrestamo(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamo,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual)}>Crear nuevo prestamo</button>
+            <button onClick={() => crearPrestamo(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamoString,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual)}>Crear nuevo prestamo</button>
           </div>
       </div>
     )
@@ -171,7 +172,14 @@ const Lista = () => {
   //useStates para que se guarden: Fecha seleccionada, dias para la devolución, si debe mostrarse el div de aumentar cobro
   //, el cobro
 
-  const [fechaNuevoPrestamo,setFechaNuevoPrestamo] = useState(new Date()) 
+  const [fechaNuevoPrestamoString,setFechaNuevoPrestamoString] = useState(format(new Date(),"dd-MM-yyyy")) 
+
+  const [fechaNuevoPrestamoDate,setFechaNuevoPrestamoDate] = useState(new Date())
+
+  const separarFechaStringYDate = (fecha:Date) => {
+    setFechaNuevoPrestamoString(format(fecha,"dd-MM-yyyy"))
+    setFechaNuevoPrestamoDate(fecha)
+  }
 
   const [diasParaLaDevolucion, setDiasParaLaDevolucion] = useState(0)
 
@@ -211,7 +219,7 @@ const Lista = () => {
       <div className='seccionFechaLimiteSelected'>
         <div className="divFechaLimiteODias">
           <div>
-            <DatePicker selected={fechaNuevoPrestamo} dateFormat={"dd-MM-yyyy"} filterDate={filtroDiasPasados} onChange={(date:Date) => setFechaNuevoPrestamo(date)}/>
+            <DatePicker selected={fechaNuevoPrestamoDate} filterDate={filtroDiasPasados} onChange={(date:Date) => separarFechaStringYDate(date)}/>
             <span> o Dias:</span>
             <input defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))}></input>
           </div>
