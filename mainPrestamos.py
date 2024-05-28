@@ -15,9 +15,7 @@ app.add_middleware(
 )
 
 """Orden"""
-#Como introducir fecha en la ventana nuevo prestamo
-# (haciendo)Tengo que ver de que formas puedo dar fechas directamente desde typescript/react por que tengo que hacer la ventana de nuevo prestamo
-#Pestaña
+#Hacer los detalles xdd
 #Saber como trabajar por capas en css
 #Css
 
@@ -34,16 +32,49 @@ app.add_middleware(
 
 fechaActual = datetime.now().date()
 
-def diasRestantes (tipoCobro,opcionCobroFinal,fechaFinal):
+def diasRestantes (tipoCobro,opcionCobroFinal,fechaLimite):
 
-    if (tipoCobro == "Fecha limite" and opcionCobroFinal == "Dejar cobro fijo") or (tipoCobro == "Fecha limite" and int(str(datetime.strptime(fechaFinal, "%Y-%m-%d").date() - fechaActual)[:-13]) >= 0 ):
-        return ""
+    #Fecha limite y no se ha pasado la fecha o no se selecciono que aumentara
 
-    #fechaDatetime = datetime.strptime(fecha, "%Y-%m-%d").date()
-
-    #restantes = str(fechaDatetime - fechaActual)[:-13] + "dias"
-
+    if (tipoCobro == "Fecha limite" and opcionCobroFinal == "Dejar cobro fijo") or (tipoCobro == "Fecha limite" and int(str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual)[:-13]) >= 0 ):
+        return str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual)[:-13] if datetime.strptime(fechaLimite, "%Y-%m-%d").date() != fechaActual else "0"
     
+    elif tipoCobro == "Acumulativo":
+        return "Aumentando cobro"
+    
+    # Si se selecciono fecha limite y se esta aumentando el cobro
+
+    else:
+        return "Aumentando cobro ",str(datetime.strptime(fechaLimite, "%Y-%m-%d") - datetime.now())[:-13]
+    
+
+def calcularCobro(tipoCobro,opcionCobroFinal,cobroFinal,cadaCuantosDiasAumenta,fechaInicial,fechaLimite,cobroInicial,acumulacionFija,acumulacionPorcentual):
+
+    diasPasados = abs( int( str(datetime.strptime(fechaInicial, "%Y-%m-%d").date() - datetime.now().date())[:-13] ) ) if datetime.strptime(fechaInicial, "%Y-%m-%d").date() != datetime.now().date() else 0
+
+    if (tipoCobro == "Fecha limite" and opcionCobroFinal == "Dejar cobro fijo") or (tipoCobro == "Fecha limite" and int(str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual)[:-13]) >= 0 ):
+        return int(cobroFinal)
+    
+    elif tipoCobro == "Acumulativo" and cadaCuantosDiasAumenta != 0:
+        for i in range(int(diasPasados/cadaCuantosDiasAumenta)):
+
+            cobroInicial *= acumulacionPorcentual/100 + 1
+
+            cobroInicial += acumulacionFija
+
+        return int(cobroInicial)
+    
+    elif tipoCobro == "Fecha limite" and opcionCobroFinal == "Aumentar cobro" and int(str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual)[:-13]) < 0:
+        for i in range(int(diasPasados/cadaCuantosDiasAumenta) + 1):
+
+            cobroFinal *= acumulacionPorcentual/100 + 1
+
+            cobroFinal += acumulacionFija
+
+        return int(cobroFinal)
+
+    else:
+        return "algo esta mal"
 
 #nombre.replace(" ","%20") vo sai si lo necesitai usar
 
@@ -52,10 +83,12 @@ async def insertarMonto(
     nombrePrestamo: str = None, tipoCobro : str = None, fechaLimitePrestamo : str = None, diasParaDevolucion : int = None, cobroFinal: int = None,
     opcionCobroFinal : str = None, cobroInicial : int = None, cadaCuantosDiasAumenta : int = None,acumulacionFija : int = None,acumulacionPorcentual : int = None):
 
-    fechaLimitePrestamo = str((datetime.strptime(fechaLimitePrestamo, "%d/%m/%Y") + timedelta(days=diasParaDevolucion)).date()) #Esta como al revez por dedcirlo asi de como se lo pasa react
+    fechaLimitePrestamo = str((datetime.strptime(fechaLimitePrestamo, "%d-%m-%Y") + timedelta(days=diasParaDevolucion)).date()) #Esta como al revez por dedcirlo asi de como se lo pasa react
+
+    fechaInicial = str(fechaActual)
 
     prestamoDict = {
-        "Nombre":nombrePrestamo, "Tipo cobro":tipoCobro, "Fecha limite":fechaLimitePrestamo, "Cobro final":cobroFinal, "Opción cobro final":opcionCobroFinal,
+        "Nombre":nombrePrestamo, "Tipo cobro":tipoCobro, "Fecha limite":fechaLimitePrestamo, "Cobro final":cobroFinal, "Opción cobro final":opcionCobroFinal,"Fecha inical":fechaInicial,
         "Cobro inical":cobroInicial,"Cada cuantos dias aumenta":cadaCuantosDiasAumenta,"Acumulación fija":acumulacionFija,"Acumulación porcentual":acumulacionPorcentual}
 
     dbClient.local.prestamos.insert_one(prestamoDict)
@@ -66,7 +99,9 @@ async def insertarMonto(
 async def obtenerDatos():
     # Convertir ObjectId a str para cada documento
     todosLosPrestamos = [
-        {"Nombre":prestamo["Nombre"], "_id": str(prestamo["_id"]),"Dias restantes":diasRestantes(prestamo["Fecha final"])}  # Convertir ObjectId a str
+        {"Nombre":prestamo["Nombre"], "_id": str(prestamo["_id"]),"Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
+         "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
+                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])}  # Convertir ObjectId a str
         for prestamo in dbClient.local.prestamos.find()
     ]
     return todosLosPrestamos

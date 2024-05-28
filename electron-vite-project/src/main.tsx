@@ -40,7 +40,7 @@ const Lista = () => {
 
   // State que se usara para guardar los prestamos
 
-  const [prestamos, cambiarPrestamos] = useState([{"_id":"","Nombre":"","Dias restantes":7777}]);
+  const [prestamos, cambiarPrestamos] = useState([{"_id":"","Nombre":"","Dias restantes":7777,"Cobro":Number}]);
   
   // Solicitudes
 
@@ -299,7 +299,7 @@ const Lista = () => {
         if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
           return (
             <div key={index}>
-              <li>{[JSON.stringify(prestamo["Nombre"]),JSON.stringify(prestamo["Dias restantes"])]}</li>
+              <li>{[JSON.stringify(prestamo["Nombre"]),JSON.stringify(prestamo["Dias restantes"]),JSON.stringify(prestamo["Cobro"])]}</li>
               <button onClick={() => handleFinalizarPrestamo(index)}>X</button>
             </div>
           );
