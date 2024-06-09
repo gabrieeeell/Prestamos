@@ -40,7 +40,7 @@ const Lista = () => {
 
   // State que se usara para guardar los prestamos
 
-  const [prestamos, cambiarPrestamos] = useState([{"_id":"","Nombre":"","Dias restantes":7777,"Cobro":Number}]);
+  const [prestamos, cambiarPrestamos] = useState([{"_id":"","Nombre":"","Dias restantes":7777,"Cobro":Number,"Detalles":""}]);
   
   // Solicitudes
 
@@ -75,10 +75,11 @@ const Lista = () => {
     cobroInicial:number,
     cadaCuantosDiasAumenta:number,
     acumulacionFija:number,
-    acumulacionPorcentual:number
+    acumulacionPorcentual:number,
+    detallesNuevoPrestamo:string
   ){
     await axios.post(
-      `http://127.0.0.1:8000/insertarMonto/${nombrePrestamo}/${tipoCobro}/${fechaLimitePrestamo}/${diasParaDevolucion}/${cobroFinal}/${opcionCobroFinal}/${cobroInicial}/${cadaCuantosDiasAumenta}/${acumulacionFija}/${acumulacionPorcentual}`)
+      `http://127.0.0.1:8000/insertarMonto/${nombrePrestamo}/${tipoCobro}/${fechaLimitePrestamo}/${diasParaDevolucion}/${cobroFinal}/${opcionCobroFinal}/${cobroInicial}/${cadaCuantosDiasAumenta}/${acumulacionFija}/${acumulacionPorcentual}/${detallesNuevoPrestamo}`)
 
     obtenerPrestamos()
   }
@@ -141,6 +142,10 @@ const Lista = () => {
 
   const [nombreNuevoPrestamo,setNombreNuevoPrestamo] = useState("")
 
+  // useState para guardar los detalles
+
+  const [detallesNuevoPrestamo,setdetallesNuevoPrestamo] = useState("")
+
   //Ventana Nuevo Prestamo
 
   const VentanaNuevoPrestamo = ({isOpen = false}) => {
@@ -149,17 +154,20 @@ const Lista = () => {
 
     return (
       <div className='ventanaNuevoPrestamoDiv'>
-          <div className='divNombreNuevoPrestamo'>
-            <span>Nombre: </span>
-            <input defaultValue={nombreNuevoPrestamo} onBlur={(e) => setNombreNuevoPrestamo(e.target.value)}></input>
-            <span>Tipo de cobro: </span>                          
-            <Select className='select' options={opcionesFechaOAcumulativo} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
-          </div>
+        <button className='botonCancelarNuevoPrestamo' onClick={() => setVentanaNuevoPrestamoIsOpen(false)}>X</button>
+        <div className='divNombreNuevoPrestamo'>
+          <span>Nombre: </span>
+          <input defaultValue={nombreNuevoPrestamo} onBlur={(e) => setNombreNuevoPrestamo(e.target.value)}></input>
+          <span>Detalles: </span>
+          <input defaultValue={detallesNuevoPrestamo} onBlur={(e) => setdetallesNuevoPrestamo(e.target.value)}></input>
+          <span>Tipo de cobro: </span>                          
+          <Select className='select' options={opcionesFechaOAcumulativo} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
+        </div>
 
-          <SeccionFechaLimiteOAcumulativo fechaLimiteIsSelected = {fechaLimiteOAcumulativoSelected}/>
-          <div className="divBotonCrearNuevoPrestamo">
-            <button onClick={() => crearPrestamo(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamoString,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual)}>Crear nuevo prestamo</button>
-          </div>
+        <SeccionFechaLimiteOAcumulativo fechaLimiteIsSelected = {fechaLimiteOAcumulativoSelected}/>
+        <div className="divBotonCrearNuevoPrestamo">
+          <button onClick={() => crearPrestamo(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamoString,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual,detallesNuevoPrestamo)}>Crear nuevo prestamo</button>
+        </div>
       </div>
     )
   }
@@ -299,7 +307,7 @@ const Lista = () => {
         if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
           return (
             <div key={index}>
-              <li>{[JSON.stringify(prestamo["Nombre"]),JSON.stringify(prestamo["Dias restantes"]),JSON.stringify(prestamo["Cobro"])]}</li>
+              <li>{[JSON.stringify(prestamo["Nombre"]),JSON.stringify(prestamo["Dias restantes"]),JSON.stringify(prestamo["Cobro"]),JSON.stringify(prestamo["Detalles"])]}</li>
               <button onClick={() => handleFinalizarPrestamo(index)}>X</button>
             </div>
           );

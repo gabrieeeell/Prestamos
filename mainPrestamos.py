@@ -15,6 +15,7 @@ app.add_middleware(
 )
 
 """Orden"""
+#que la wea envie los detalles XDDD
 #Hacer los detalles xdd
 #Saber como trabajar por capas en css
 #Css
@@ -78,10 +79,10 @@ def calcularCobro(tipoCobro,opcionCobroFinal,cobroFinal,cadaCuantosDiasAumenta,f
 
 #nombre.replace(" ","%20") vo sai si lo necesitai usar
 
-@app.post("/insertarMonto/{nombrePrestamo}/{tipoCobro}/{fechaLimitePrestamo}/{diasParaDevolucion}/{cobroFinal}/{opcionCobroFinal}/{cobroInicial}/{cadaCuantosDiasAumenta}/{acumulacionFija}/{acumulacionPorcentual}")
+@app.post("/insertarMonto/{nombrePrestamo}/{tipoCobro}/{fechaLimitePrestamo}/{diasParaDevolucion}/{cobroFinal}/{opcionCobroFinal}/{cobroInicial}/{cadaCuantosDiasAumenta}/{acumulacionFija}/{acumulacionPorcentual}/{detallesNuevoPrestamo}")
 async def insertarMonto(                               
     nombrePrestamo: str = None, tipoCobro : str = None, fechaLimitePrestamo : str = None, diasParaDevolucion : int = None, cobroFinal: int = None,
-    opcionCobroFinal : str = None, cobroInicial : int = None, cadaCuantosDiasAumenta : int = None,acumulacionFija : int = None,acumulacionPorcentual : int = None):
+    opcionCobroFinal : str = None, cobroInicial : int = None, cadaCuantosDiasAumenta : int = None,acumulacionFija : int = None,acumulacionPorcentual : int = None, detallesNuevoPrestamo : str = None):
 
     fechaLimitePrestamo = str((datetime.strptime(fechaLimitePrestamo, "%d-%m-%Y") + timedelta(days=diasParaDevolucion)).date()) #Esta como al revez por dedcirlo asi de como se lo pasa react
 
@@ -89,7 +90,7 @@ async def insertarMonto(
 
     prestamoDict = {
         "Nombre":nombrePrestamo, "Tipo cobro":tipoCobro, "Fecha limite":fechaLimitePrestamo, "Cobro final":cobroFinal, "Opción cobro final":opcionCobroFinal,"Fecha inical":fechaInicial,
-        "Cobro inical":cobroInicial,"Cada cuantos dias aumenta":cadaCuantosDiasAumenta,"Acumulación fija":acumulacionFija,"Acumulación porcentual":acumulacionPorcentual}
+        "Cobro inical":cobroInicial,"Cada cuantos dias aumenta":cadaCuantosDiasAumenta,"Acumulación fija":acumulacionFija,"Acumulación porcentual":acumulacionPorcentual,"Detalles":detallesNuevoPrestamo}
 
     dbClient.local.prestamos.insert_one(prestamoDict)
 
@@ -99,9 +100,12 @@ async def insertarMonto(
 async def obtenerDatos():
     # Convertir ObjectId a str para cada documento
     todosLosPrestamos = [
-        {"Nombre":prestamo["Nombre"], "_id": str(prestamo["_id"]),"Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
+        {"Nombre":prestamo["Nombre"], 
+         "_id": str(prestamo["_id"]),
+         "Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
          "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
-                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])}  # Convertir ObjectId a str
+                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"]),
+         "Detalles":prestamo["Detalles"]}  # Convertir ObjectId a str
         for prestamo in dbClient.local.prestamos.find()
     ]
     return todosLosPrestamos
