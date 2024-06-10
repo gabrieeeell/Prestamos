@@ -15,8 +15,8 @@ app.add_middleware(
 )
 
 """Orden"""
-#que la wea envie los detalles XDDD
-#Hacer los detalles xdd
+#Que devuelva la fecha al react
+#Poner el boton de config y las 3 rayas de la esquina ya en la estructura (aunque no tengan función), para ya considerarlos para el css
 #Saber como trabajar por capas en css
 #Css
 
@@ -48,6 +48,11 @@ def diasRestantes (tipoCobro,opcionCobroFinal,fechaLimite):
     else:
         return "Aumentando cobro ",str(datetime.strptime(fechaLimite, "%Y-%m-%d") - datetime.now())[:-13]
     
+
+#Como la fecha limite se calcula con anterioridad, esta función solo ve si tiene que returnear esa o un guion si es que se selecciono tipo cobro acumulativo
+
+def fechaLimiteOGuion(tipoCobro,fechaLimite):
+    return fechaLimite if tipoCobro == "Fecha limite" else "-"
 
 def calcularCobro(tipoCobro,opcionCobroFinal,cobroFinal,cadaCuantosDiasAumenta,fechaInicial,fechaLimite,cobroInicial,acumulacionFija,acumulacionPorcentual):
 
@@ -105,7 +110,8 @@ async def obtenerDatos():
          "Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
          "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
                                prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"]),
-         "Detalles":prestamo["Detalles"]}  # Convertir ObjectId a str
+         "Detalles":prestamo["Detalles"],
+         "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"])}  # Convertir ObjectId a str
         for prestamo in dbClient.local.prestamos.find()
     ]
     return todosLosPrestamos
