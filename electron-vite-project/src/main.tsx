@@ -146,6 +146,20 @@ const Lista = () => {
 
   const [detallesNuevoPrestamo,setdetallesNuevoPrestamo] = useState("")
 
+  //Boton 3 rayas
+
+  const Boton3Rayas = () => {
+    return (
+      <button> 3 rayas</button>
+    )
+  }
+
+  const BotonConfiguracionPrestamo = () => {
+    return (
+      <button>⚙</button>
+    )
+  }
+
   //Ventana Nuevo Prestamo
 
   const VentanaNuevoPrestamo = ({isOpen = false}) => {
@@ -227,7 +241,7 @@ const Lista = () => {
       <div className='seccionFechaLimiteSelected'>
         <div className="divFechaLimiteODias">
           <div>
-            <DatePicker selected={fechaNuevoPrestamoDate} filterDate={filtroDiasPasados} onChange={(date:Date) => separarFechaStringYDate(date)}/>
+            <DatePicker selected={fechaNuevoPrestamoDate} dateFormat="dd/MM/yyyy" filterDate={filtroDiasPasados} onChange={(date:Date) => separarFechaStringYDate(date)}/>
             <span> o Dias:</span>
             <input defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))}></input>
           </div>
@@ -300,22 +314,26 @@ const Lista = () => {
 
   return (
     <>
-    <Buscador nombreBuscador={nombreBuscador} cambiarNombreBuscador={cambiarNombreBuscador}/>
-    <BotonNuevoPrestamo/>
-    <ul>
-      {prestamos.map((prestamo, index) => {
-        if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
-          return (
-            <div key={index}>
-              <li>{[JSON.stringify(prestamo["Nombre"]),JSON.stringify(prestamo["Dias restantes"]),JSON.stringify(prestamo["Cobro"]),JSON.stringify(prestamo["Detalles"]),JSON.stringify(prestamo["Fecha limite"])]}</li>
-              <button onClick={() => handleFinalizarPrestamo(index)}>X</button>
-            </div>
-          );
-        } else {
-          return null; // No renderizar nada si la condición no se cumple
-        }
-      })}
-    </ul>
+    <div>
+      <Buscador nombreBuscador={nombreBuscador} cambiarNombreBuscador={cambiarNombreBuscador}/>
+      <BotonNuevoPrestamo/>
+      <ul>
+        {prestamos.map((prestamo, index) => {
+          if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
+            return (
+              <div key={index}>
+                <BotonConfiguracionPrestamo/>
+                <li>{[JSON.stringify(prestamo["Nombre"]),JSON.stringify(prestamo["Dias restantes"]),JSON.stringify(prestamo["Cobro"]),JSON.stringify(prestamo["Detalles"]),JSON.stringify(prestamo["Fecha limite"])]}</li>
+                <button onClick={() => handleFinalizarPrestamo(index)}>X</button>
+              </div>
+            );
+          } else {
+            return null; // No renderizar nada si la condición no se cumple
+          }
+        })}
+      </ul>
+    </div>
+    <Boton3Rayas/>
     <ConfirmarFinalizarPrestamo isOpen={confirmarFinalizacionIsOpen} index={indexConfirmarFinalizacion}/>
     <VentanaNuevoPrestamo isOpen={ventanaNuevoPrestamoIsOpen}/>
   </>

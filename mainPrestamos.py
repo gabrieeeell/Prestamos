@@ -15,30 +15,46 @@ app.add_middleware(
 )
 
 """Orden"""
-#Que devuelva la fecha al react
-#Poner el boton de config y las 3 rayas de la esquina ya en la estructura (aunque no tengan función), para ya considerarlos para el css
+#Poner el boton de config ya en la estructura (aunque no tengan función), para ya considerarlos para el css
+#Probablente habra que usar otra cosa en vez de <button> pq estos no quedan bien para el diseño final
 #Saber como trabajar por capas en css
 #Css
+#Ver cuanto tengo que recortar en la parte de dias restantes cuando se pasa la fecha limite (y que ponga dias, no days)
 
 """Ideas"""
-#La funcion obtener prestamos deberia venir con una funcion que actualiza los precios
-#Separar la wea por modulos pq ya esta quedando mucho en un solo archivo (Me quedo grande esta tarea)
-#Taria bueno que en vez de ingresar los dias te salga un calendario de la fecha en la que se deberia devolver
-#Cuando un prestamo se pasa de su fecha de devolución, este cambie de color y empieze a sumar al monto
-#Haya una parte de configuración del prestamo que te deje cambiar el interes, lo que pasa cuando se vence el plazo, etc
-#Cada prestamo deberia tener un ticket para que desaparezca, una vez se aprete el ticket, estos se deberian ir a un historial
-#porciacaso
-#Los prestamos se deberian ordenar por fecha limite
-#Si se selecciona cobro de tipo acomulativo
+#Un indicativo de cuantos dias faltan para que se acumule denuevo(?
+#Cuando un prestamo se pasa de su fecha de devolución, este cambie de color
+#Haya una parte de configuración del prestamo que te deje cambiar el interes, lo que pasa cuando se vence el plazo, etc, ->
+#-> una parte para cambiar el cobro a uno fijo en el momento, poner que se deje de acumular a partir de ahora (esas 2 ideas deberian ir)
+#Cada prestamo deberia tener un ticket para que desaparezca, una vez se aprete el ticket, estos se deberian ir a un historial, que estara
+#-> en las 3 rayas
+#Los prestamos se deberian ordenar por fecha limite, dias desde que se empezo a acumular, cobro
+
 
 fechaActual = datetime.now().date()
+
+def datetimeToDias(fechaLimite):
+    resultado = ""
+    for letra in str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual):
+        try:
+            
+            int(letra)
+            resultado += letra
+            
+        except:
+            if letra == "-":
+                resultado += letra
+            else:
+                break
+    return resultado
+
 
 def diasRestantes (tipoCobro,opcionCobroFinal,fechaLimite):
 
     #Fecha limite y no se ha pasado la fecha o no se selecciono que aumentara
 
     if (tipoCobro == "Fecha limite" and opcionCobroFinal == "Dejar cobro fijo") or (tipoCobro == "Fecha limite" and int(str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual)[:-13]) >= 0 ):
-        return str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual)[:-13] if datetime.strptime(fechaLimite, "%Y-%m-%d").date() != fechaActual else "0"
+        return datetimeToDias(fechaLimite) if datetime.strptime(fechaLimite, "%Y-%m-%d").date() != fechaActual else "0"
     
     elif tipoCobro == "Acumulativo":
         return "Aumentando cobro"
@@ -46,7 +62,7 @@ def diasRestantes (tipoCobro,opcionCobroFinal,fechaLimite):
     # Si se selecciono fecha limite y se esta aumentando el cobro
 
     else:
-        return "Aumentando cobro ",str(datetime.strptime(fechaLimite, "%Y-%m-%d") - datetime.now())[:-13]
+        return f"Aumentando cobro {datetimeToDias(fechaLimite)}"
     
 
 #Como la fecha limite se calcula con anterioridad, esta función solo ve si tiene que returnear esa o un guion si es que se selecciono tipo cobro acumulativo
