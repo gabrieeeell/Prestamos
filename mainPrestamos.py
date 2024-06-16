@@ -15,8 +15,12 @@ app.add_middleware(
 )
 
 """Orden"""
-#Poner el boton de config ya en la estructura (aunque no tengan función), para ya considerarlos para el css
-#Probablente habra que usar otra cosa en vez de <button> pq estos no quedan bien para el diseño final
+#ver como poner el icono de las 3 barras(ya descargue el svg) y ver que su css no sea más de lo que necesito
+#lo que pone en excalidraw
+#pensar en nuevo diseño para cada prestamo dentro de la lista (y hacerlo?)
+#Separar el css (uno para botones otro para divs, ns busca convenios)
+#Como hacer la wea de las ventanas por encima como la del nuevo prestamo (creo que modal)
+#instrucciones en excalidraw
 #Saber como trabajar por capas en css
 #Css
 #Ver cuanto tengo que recortar en la parte de dias restantes cuando se pasa la fecha limite (y que ponga dias, no days)
