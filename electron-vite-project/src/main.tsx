@@ -6,6 +6,7 @@ import Select, { SingleValue } from "react-select"
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from 'date-fns';
+import BarsIcon from './assets/bars';
 
 const Buscador = ({ nombreBuscador, cambiarNombreBuscador }: { nombreBuscador: string, cambiarNombreBuscador: (value: string) => void }) => {
 
@@ -105,7 +106,7 @@ const Lista = () => {
   const BotonNuevoPrestamo = () => {
 
     return (
-      <button id='botonNuevoPrestamo' className='boxShadow' onClick={() => setVentanaNuevoPrestamoIsOpen(true)}>Crear nuevo prestamo</button>
+      <button id='botonNuevoPrestamo' className='boxShadow justifyCenter' onClick={() => setVentanaNuevoPrestamoIsOpen(true)}>Crear nuevo prestamo</button>
     )
   }
 
@@ -143,11 +144,11 @@ const Lista = () => {
 
   //Boton 3 rayas
 
-  const Boton3Rayas = () => {
+  const MenuBoton3Rayas = () => {
     return (
       <div className="colorOscuro" id='menu3Rayas'>
-        <button id='boton3Rayas'> 
-          asdd
+        <button id='boton3Rayas' className='justifyCenter alignItemsCenter colorOscuro'> 
+          <BarsIcon/>
         </button>
       </div>
     )
@@ -336,7 +337,7 @@ const Lista = () => {
         </ul>
       </div>
     </div>
-    <Boton3Rayas/>
+    <MenuBoton3Rayas/>
     <ConfirmarFinalizarPrestamo isOpen={confirmarFinalizacionIsOpen} index={indexConfirmarFinalizacion}/>
     <VentanaNuevoPrestamo isOpen={ventanaNuevoPrestamoIsOpen}/>
   </>

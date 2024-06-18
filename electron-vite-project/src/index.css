@@ -1,7 +1,19 @@
 body {
     min-height: 100vh;
     background-color: #31303b;
+    margin: 0;
+    padding: 0;
     /*background-color: #1F1F1F;*/
+}
+
+.justifyCenter{
+    display: flex;
+    justify-content: center;
+}
+
+.alignItemsCenter{
+    display: flex;
+    align-items: center;
 }
 
 #root{
@@ -9,6 +21,8 @@ body {
     height: 100%;
     display: flex;
     flex-direction: row;
+    margin: 0;
+    padding: 0;
 }
 
 #divPrincipal{
@@ -73,7 +87,6 @@ body {
     font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
     font-size: 1rem;
     font-weight: 600;
-    justify-content: center;
     line-height: 1rem;
     width: 15rem;
     max-width: 480px;
@@ -114,20 +127,14 @@ body {
 
 /* https://getcssscan.com/css-buttons-examples  (button 2) */
 #boton3Rayas {
-  background-color: rgba(51, 51, 51, 0.05);
-  border-radius: 8px;
+  border-radius: 1.5rem;
   border-width: 0;
-  width: 2.8rem;
-  color: #333333;
+  width: 2.5rem;
+  height: 2.5rem;
   cursor: pointer;
-  display: inline-block;
-  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
+  display: flex;
   list-style: none;
-  margin: 0;
-  padding: 10px 12px;
+  margin-top: 0.3rem;
   text-align: center;
   transition: all 200ms;
   vertical-align: baseline;
@@ -137,7 +144,16 @@ body {
   touch-action: manipulation;
 }
 
+#boton3Rayas:hover{
+    background-color: #474747;
+}
+
 /*https://getcssscan.com/css-buttons-examples  (button 18)*/
+
+#imagen3Barras{
+    width: 1.2rem;
+    margin-left: 0.07rem;
+}
 
 .positionRelative{
     position: relative;
@@ -162,11 +178,14 @@ body {
 }
 
 .colorOscuro{
-    background-color: #292929;
+    background-color: #333333;
 }
 
 #menu3Rayas {
-    width: 5rem;
+    width: 3.5rem;
+    left: 0;
+    justify-content: center;
+    display: flex;
 }
 
 .confirmarFinalizacionPrestamoDiv {

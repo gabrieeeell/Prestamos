@@ -18,6 +18,7 @@ app.add_middleware(
 #ver como poner el icono de las 3 barras(ya descargue el svg) y ver que su css no sea más de lo que necesito
 #lo que pone en excalidraw
 #pensar en nuevo diseño para cada prestamo dentro de la lista (y hacerlo?)
+#Como hacer que no salga la scrollbar (que los tamaños esten bien bien ajustados)
 #Separar el css (uno para botones otro para divs, ns busca convenios)
 #Como hacer la wea de las ventanas por encima como la del nuevo prestamo (creo que modal)
 #instrucciones en excalidraw
