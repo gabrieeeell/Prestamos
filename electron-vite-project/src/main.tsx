@@ -146,7 +146,7 @@ const Lista = () => {
 
   const MenuBoton3Rayas = () => {
     return (
-      <div className="colorOscuro" id='menu3Rayas'>
+      <div className="colorOscuro boxShadow" id='menu3Rayas'>
         <button id='boton3Rayas' className='justifyCenter alignItemsCenter colorOscuro'> 
           <BarsIcon/>
         </button>
@@ -170,10 +170,10 @@ const Lista = () => {
       <div className='ventanaNuevoPrestamoDiv'>
         <button className='botonCancelarNuevoPrestamo' onClick={() => setVentanaNuevoPrestamoIsOpen(false)}>X</button>
         <div className='divNombreNuevoPrestamo'>
-          <span>Nombre: </span>
-          <input defaultValue={nombreNuevoPrestamo} onBlur={(e) => setNombreNuevoPrestamo(e.target.value)}></input>
-          <span>Detalles: </span>
-          <input defaultValue={detallesNuevoPrestamo} onBlur={(e) => setdetallesNuevoPrestamo(e.target.value)}></input>
+          <label htmlFor='inputNombre'>Nombre:</label>
+          <input id="inputNombre" defaultValue={nombreNuevoPrestamo} onBlur={(e) => setNombreNuevoPrestamo(e.target.value)}></input>
+          <label htmlFor='detallesInput'>Detalles: </label>
+          <input id="detallesInput" defaultValue={detallesNuevoPrestamo} onBlur={(e) => setdetallesNuevoPrestamo(e.target.value)}></input>
           <span>Tipo de cobro: </span>                          
           <Select className='select' options={opcionesFechaOAcumulativo} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
         </div>
@@ -242,12 +242,12 @@ const Lista = () => {
         <div className="divFechaLimiteODias">
           <div>
             <DatePicker selected={fechaNuevoPrestamoDate} dateFormat="dd/MM/yyyy" filterDate={filtroDiasPasados} onChange={(date:Date) => separarFechaStringYDate(date)}/>
-            <span> o Dias:</span>
-            <input defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))}></input>
+            <label htmlFor='inputODias'>O Dias:</label>
+            <input id="inputODias" defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))}></input>
           </div>
           <div>
-            <span>Cobro:</span>
-            <input defaultValue={cobro} onBlur={(event) => setCobro(Number(event.target.value))}></input>
+            <label htmlFor='inputCobro'>Cobro:</label>
+            <input id="inputCobro" defaultValue={cobro} onBlur={(event) => setCobro(Number(event.target.value))}></input>
           </div>
           <span>Acción al pasarse la fecha:</span>
           <Select options={opcionesFijoOAumentar} onChange={(event) => selectFijoOAumentar(event)} defaultValue={{label:aumentarCobroIsOpen,value:aumentarCobroIsOpen}}/>
@@ -262,15 +262,15 @@ const Lista = () => {
 
   const [cobroInicial, setCobroInicial] = useState(0)
 
-  // Veo que se selecciono en fechaLimiteOAcumulativoSelected para ver si tengo que ver un cobro incial o no (en excalidraw es claro)
+  // Veo que se selecciono en fechaLimiteOAcumulativoSelected para ver si tengo que ver un cobro inicial o no (en excalidraw es claro)
 
   const CobroInicial = ({cobroInicialIsOpen = "Fecha limite"}) => {
     if (cobroInicialIsOpen == "Fecha limite") return null;
 
     return (
       <div>
-        <span>Cobro inicial</span>
-        <input defaultValue={cobroInicial} onBlur={(event) => setCobroInicial(Number(event.target.value))}></input>
+        <label htmlFor='inputCobroInicial'>Cobro inicial:</label>
+        <input id='inputCobroInicial' defaultValue={cobroInicial} onBlur={(event) => setCobroInicial(Number(event.target.value))}></input>
       </div>
     )
   }
@@ -290,16 +290,16 @@ const Lista = () => {
       <div>
         <CobroInicial cobroInicialIsOpen = {fechaLimiteOAcumulativoSelected}/>
         <div>
-          <span>Cada cuantos días:</span>
-          <input defaultValue={cadaCuantosDias} onBlur={(event) => setCadaCuantosDias(Number(event.target.value))}></input>
+          <label htmlFor='inputCadaCuantosDias'>Cada cuantos días:</label>
+          <input id='inputCadaCuantosDias' defaultValue={cadaCuantosDias} onBlur={(event) => setCadaCuantosDias(Number(event.target.value))}></input>
         </div>
         <div>
-          <span>Aumento fijo:</span>
-          <input defaultValue={aumentoFijo} onBlur={(event) => setAumentoFijo(Number(event.target.value))}></input>
+          <label htmlFor='inputAumentoFijo'>Aumento fijo:</label>
+          <input id='inputAumentoFijo' defaultValue={aumentoFijo} onBlur={(event) => setAumentoFijo(Number(event.target.value))}></input>
         </div>
         <div>
-          <span>Aumento porcentual:  %</span>
-          <input defaultValue={aumentoPorcentual} onBlur={(event) => setAumentoPorcentual(Number(event.target.value))}></input>
+          <label htmlFor='inputAumentoPorcentual'>Aumento porcentual:  %</label>
+          <input id='inputAumentoPorcentual' defaultValue={aumentoPorcentual} onBlur={(event) => setAumentoPorcentual(Number(event.target.value))}></input>
         </div>
       </div>
     )

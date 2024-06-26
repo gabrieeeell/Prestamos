@@ -1,8 +1,14 @@
+html {
+    height: 100%;
+}
+
 body {
     min-height: 100vh;
     background-color: #31303b;
     margin: 0;
     padding: 0;
+    position: relative;
+    height: 100%;
     /*background-color: #1F1F1F;*/
 }
 
@@ -183,6 +189,7 @@ body {
 
 #menu3Rayas {
     width: 3.5rem;
+    height: 100%;
     left: 0;
     justify-content: center;
     display: flex;
