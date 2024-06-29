@@ -15,16 +15,13 @@ app.add_middleware(
 )
 
 """Orden"""
-#ver como poner el icono de las 3 barras(ya descargue el svg) y ver que su css no sea más de lo que necesito
+#que quede igual a como estaba antes
+#Hacer clases como clases especiales de tailwind (una para el color del fondo (colorOscuro xd))
 #lo que pone en excalidraw
 #pensar en nuevo diseño para cada prestamo dentro de la lista (y hacerlo?)
 #Como hacer que no salga la scrollbar (que los tamaños esten bien bien ajustados)
-#Separar el css (uno para botones otro para divs, ns busca convenios)
 #Como hacer la wea de las ventanas por encima como la del nuevo prestamo (creo que modal)
 #instrucciones en excalidraw
-#Saber como trabajar por capas en css
-#Css
-#Ver cuanto tengo que recortar en la parte de dias restantes cuando se pasa la fecha limite (y que ponga dias, no days)
 
 """Ideas"""
 #Un indicativo de cuantos dias faltan para que se acumule denuevo(?

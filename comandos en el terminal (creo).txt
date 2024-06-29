@@ -1,0 +1,13 @@
+npm install date-fns  // No es de Datepicker, pero lo necesito para darle el formato correcto a la fecha
+
+npm install react-datepicker
+
+npm i --save-dev @types/react-datepicker
+
+npm install yarn
+
+yarn add react-select
+
+npm install -D tailwindcss postcss-cli autoprefixer
+
+npx tailwindcss init -p

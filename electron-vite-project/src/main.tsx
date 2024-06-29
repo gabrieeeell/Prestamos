@@ -12,8 +12,8 @@ const Buscador = ({ nombreBuscador, cambiarNombreBuscador }: { nombreBuscador: s
 
   return (
     <>
-      <svg className="icon" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
-      <input id='buscadorPrestamos' className='colorOscuro boxShadow' value={nombreBuscador} onChange={(event) => cambiarNombreBuscador(event.target.value)} placeholder='Buscar por nombre'></input>
+      <svg className="absolute left-2 top-[0.7rem] fill-[#9e9ea7] w-[1.3rem] h-[1.3rem]" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
+      <input id="buscador" className='shadow-1 w-[50rem] h-[40px] leading-[28px] px-4 pl-10 border-2 border-transparent rounded-lg outline-none text-[#9594ad] placeholder-[#9e9ea7] focus:outline-none focus:border-[rgba(63,62,63,0.4)] focus:shadow-[0_5px_15px_rgba(17,17,17,0.35)] hover:outline-none hover:border-[rgba(63,62,63,0.4)] hover:shadow-[0_5px_15px_rgba(17,17,17,0.35)] transition duration-300 ease-in-out' value={nombreBuscador} onChange={(event) => cambiarNombreBuscador(event.target.value)} placeholder='Buscar por nombre'></input>
     </>
   )
 };
@@ -93,7 +93,7 @@ const Lista = () => {
     if (!isOpen) return null;
   
     return (
-      <div className='confirmarFinalizacionPrestamoDiv'>
+      <div id="confirmarFinalizacionPrestamoDiv" className='bg-gray-700'>
         <h2>Estas seguro de querer finalizar este prestamo?</h2>
         <button onClick={() => setConfirmarFinalizacionIsOpen(false)}>Cancelar</button>
         <button onClick={() => borrarPrestamo(index)}>Confirmar</button>
@@ -106,7 +106,7 @@ const Lista = () => {
   const BotonNuevoPrestamo = () => {
 
     return (
-      <button id='botonNuevoPrestamo' className='boxShadow justifyCenter' onClick={() => setVentanaNuevoPrestamoIsOpen(true)}>Crear nuevo prestamo</button>
+      <button id='botonNuevoPrestamo' className='shadow-1 justify-center bg-[#406b2e] text-white inline-flex items-center border-0 rounded-lg box-border cursor-pointer font-sans font-semibold text-[1rem] leading-[1rem] w-[15rem] max-w-[480px] min-h-[40px] min-w-0 overflow-hidden px-0 pl-[10px] pr-[10px] ml-8 text-center touch-manipulation transition duration-[0.167s] ease-[cubic-bezier(0.4,0,0.2,1)] select-none -webkit-select-none align-middle mb-4 hover:bg-[#375a28] hover:text-white focus:bg-[#375a28] focus:text-white active:bg-[#2f4d22] active:text-[rgba(255,255,255,0.7)] disabled:cursor-not-allowed disabled:bg-[rgba(0,0,0,0.08)] disabled:text-[rgba(0,0,0,0.3)]' onClick={() => setVentanaNuevoPrestamoIsOpen(true)}>Crear nuevo prestamo</button>
     )
   }
 
@@ -146,8 +146,8 @@ const Lista = () => {
 
   const MenuBoton3Rayas = () => {
     return (
-      <div className="colorOscuro boxShadow" id='menu3Rayas'>
-        <button id='boton3Rayas' className='justifyCenter alignItemsCenter colorOscuro'> 
+      <div className="bg-oscuro shadow-1 w-14 h-full left-0 justify-center flex" id='menu3Rayas'>
+        <button id='boton3Rayas' className='justify-center items-center bg-oscuro rounded-[1.5rem] border-0 w-[2.5rem] h-[2.5rem] cursor-pointer flex list-none mt-[0.3rem] text-center transition-all duration-200 align-baseline whitespace-nowrap select-none -webkit-select-none touch-manipulation hover:bg-[#474747]'> 
           <BarsIcon/>
         </button>
       </div>
@@ -167,7 +167,7 @@ const Lista = () => {
     if (!isOpen) return null;
 
     return (
-      <div className='ventanaNuevoPrestamoDiv'>
+      <div id="ventanaNuevoPrestamoDiv" className='bg-gray-600'>
         <button className='botonCancelarNuevoPrestamo' onClick={() => setVentanaNuevoPrestamoIsOpen(false)}>X</button>
         <div className='divNombreNuevoPrestamo'>
           <label htmlFor='inputNombre'>Nombre:</label>
@@ -175,7 +175,7 @@ const Lista = () => {
           <label htmlFor='detallesInput'>Detalles: </label>
           <input id="detallesInput" defaultValue={detallesNuevoPrestamo} onBlur={(e) => setdetallesNuevoPrestamo(e.target.value)}></input>
           <span>Tipo de cobro: </span>                          
-          <Select className='select' options={opcionesFechaOAcumulativo} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
+          <Select className='w-24' options={opcionesFechaOAcumulativo} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
         </div>
 
         <SeccionFechaLimiteOAcumulativo fechaLimiteIsSelected = {fechaLimiteOAcumulativoSelected}/>
@@ -238,7 +238,7 @@ const Lista = () => {
     const filtroDiasPasados = (date:Date) => new Date() <= date
 
     return (
-      <div className='seccionFechaLimiteSelected'>
+      <div id="seccionFechaLimiteSelected" className='bg-gray-800'>
         <div className="divFechaLimiteODias">
           <div>
             <DatePicker selected={fechaNuevoPrestamoDate} dateFormat="dd/MM/yyyy" filterDate={filtroDiasPasados} onChange={(date:Date) => separarFechaStringYDate(date)}/>
@@ -314,12 +314,12 @@ const Lista = () => {
 
   return (
     <>
-    <div className='flexDirectionColumn' id='divPrincipal'>
-      <div className='flexDirectionRow positionRelative'>
+    <div id="divPrincipal" className='flex flex-col w-[80rem] m-12 '>
+      <div className='flex flex-row relative'>
         <Buscador nombreBuscador={nombreBuscador} cambiarNombreBuscador={cambiarNombreBuscador}/>
         <BotonNuevoPrestamo/>
       </div>
-      <div className='colorOscuro bordeCurvo boxShadow' id='divLista'>
+      <div id="divLista" className='bg-oscuro rounded-1 shadow-1 h-96'> {/*Después subir por que eran 33 rem*/}
         <ul>
           {prestamos.map((prestamo, index) => {
             if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
