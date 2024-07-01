@@ -7,8 +7,9 @@ module.exports = {
       width: {
         '80rem': '80rem', // Definimos el ancho personalizado de 80rem
       },
-      boxShadow: {
+      boxShadow: { "para llamarlo es:":{/*shadow-(clave)*/},
         '1': 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
+        'interno':'rgba(0, 0, 0, 0.35) 0px 5px 15px, rgba(0, 0, 0, 0.20) 0px -2px 12px 0px inset',
       },
       borderRadius:{
         '1':'2rem'

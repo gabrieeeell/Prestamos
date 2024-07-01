@@ -23,4 +23,19 @@
         margin: 0;
         padding: 0;
     }
+    /* Estilos de Scrollbar para Chrome, Edge y Safari */
+*::-webkit-scrollbar {
+    width: 0.7rem;
+    padding-right: 3rem;
+  }
+  
+  *::-webkit-scrollbar-track {
+    background: #707070;
+  }
+  
+  *::-webkit-scrollbar-thumb {
+    background-color: #858585;
+    border-radius: 2rem;
+    border: 0px solid #ffffff;
+  }
   }

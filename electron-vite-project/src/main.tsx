@@ -319,22 +319,24 @@ const Lista = () => {
         <Buscador nombreBuscador={nombreBuscador} cambiarNombreBuscador={cambiarNombreBuscador}/>
         <BotonNuevoPrestamo/>
       </div>
-      <div id="divLista" className='bg-oscuro rounded-1 shadow-1 h-96'> {/*Después subir por que eran 33 rem*/}
-        <ul>
-          {prestamos.map((prestamo, index) => {
-            if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
-              return (
-                <div key={index}>
-                  <BotonConfiguracionPrestamo/>
-                  <li>{[JSON.stringify(prestamo["Nombre"]),JSON.stringify(prestamo["Dias restantes"]),JSON.stringify(prestamo["Cobro"]),JSON.stringify(prestamo["Detalles"]),JSON.stringify(prestamo["Fecha limite"])]}</li>
-                  <button onClick={() => handleFinalizarPrestamo(index)}>X</button>
-                </div>
-              );
-            } else {
-              return null; // No renderizar nada si la condición no se cumple
-            }
-          })}
-        </ul>
+      <div id="probandoEncerrarDivLista" className='w-[73rem] shadow-1 shadow-interno bg-oscuro rounded-1 h-[33rem]'>
+        <div id="divLista" className='w-11/12 overflow-y-auto bg-transparent rounded-1 h-[33rem]'> {/*Después subir por que eran 33 rem*/}
+          <ul className='w-11/12'>
+            {prestamos.map((prestamo, index) => {
+              if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
+                return (
+                  <div className="m-2 w-11/12" key={index}>
+                    <BotonConfiguracionPrestamo/>
+                    <li>{[JSON.stringify(prestamo["Nombre"]),JSON.stringify(prestamo["Dias restantes"]),JSON.stringify(prestamo["Cobro"]),JSON.stringify(prestamo["Detalles"]),JSON.stringify(prestamo["Fecha limite"])]}</li>
+                    <button onClick={() => handleFinalizarPrestamo(index)}>X</button>
+                  </div>
+                );
+              } else {
+                return null; // No renderizar nada si la condición no se cumple
+              }
+            })}
+          </ul>
+        </div>
       </div>
     </div>
     <MenuBoton3Rayas/>

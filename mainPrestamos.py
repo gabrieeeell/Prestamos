@@ -15,7 +15,6 @@ app.add_middleware(
 )
 
 """Orden"""
-#que quede igual a como estaba antes
 #Hacer clases como clases especiales de tailwind (una para el color del fondo (colorOscuro xd))
 #lo que pone en excalidraw
 #pensar en nuevo diseño para cada prestamo dentro de la lista (y hacerlo?)
