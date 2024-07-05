@@ -15,7 +15,7 @@ app.add_middleware(
 )
 
 """Orden"""
-#Hacer clases como clases especiales de tailwind (una para el color del fondo (colorOscuro xd))
+#Cual es el proposito de que el menu se mueva si no tapa absolutamente nada? (en vola con los iconos dara igual)
 #lo que pone en excalidraw
 #pensar en nuevo diseño para cada prestamo dentro de la lista (y hacerlo?)
 #Como hacer que no salga la scrollbar (que los tamaños esten bien bien ajustados)
@@ -23,6 +23,7 @@ app.add_middleware(
 #instrucciones en excalidraw
 
 """Ideas"""
+#Que el engranaje gire cuando pones el mouse encima de el
 #Un indicativo de cuantos dias faltan para que se acumule denuevo(?
 #Cuando un prestamo se pasa de su fecha de devolución, este cambie de color
 #Haya una parte de configuración del prestamo que te deje cambiar el interes, lo que pasa cuando se vence el plazo, etc, ->

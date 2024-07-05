@@ -7,6 +7,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from 'date-fns';
 import BarsIcon from './assets/bars';
+import GearIcon from './assets/gear';
+import CheckIcon from './assets/check';
 
 const Buscador = ({ nombreBuscador, cambiarNombreBuscador }: { nombreBuscador: string, cambiarNombreBuscador: (value: string) => void }) => {
 
@@ -142,21 +144,57 @@ const Lista = () => {
 
   const [detallesNuevoPrestamo,setdetallesNuevoPrestamo] = useState("")
 
-  //Boton 3 rayas
+  //Boton 3 rayas  tres Tres boton Rayas
+
 
   const MenuBoton3Rayas = () => {
+
+    const [menuIsAbierto,setMenuIsAbierto] = useState(false)
+
+    const handleMenuIsAbierto = () => {
+      if (menuIsAbierto == true) {
+        setMenuIsAbierto(false)
+      } else {
+        setMenuIsAbierto(true)
+      }
+    }
+  
+    useEffect(() => {
+      const menuDiv = document.getElementById("menu3Rayas");
+      if (menuIsAbierto == true) {
+        menuDiv.classList.remove('translate-x-[7.5rem]')
+      } else {
+        menuDiv.classList.add('translate-x-[7.5rem]')
+      }
+    }, [menuIsAbierto])
+  
+
     return (
-      <div className="bg-oscuro shadow-1 w-14 h-full left-0 justify-center flex" id='menu3Rayas'>
-        <button id='boton3Rayas' className='justify-center items-center bg-oscuro rounded-[1.5rem] border-0 w-[2.5rem] h-[2.5rem] cursor-pointer flex list-none mt-[0.3rem] text-center transition-all duration-200 align-baseline whitespace-nowrap select-none -webkit-select-none touch-manipulation hover:bg-[#474747]'> 
-          <BarsIcon/>
-        </button>
+      <div>
+        <div  id='menu3Rayas' className="bg-oscuro ease-linear shadow-1 w-[10rem] absolute translate-x-[7.5rem] duration-300 h-full right-0 flex">
+          <button onClick={handleMenuIsAbierto} id='boton3Rayas' className='justify-center items-center bg-oscuro rounded-[1.5rem] border-0 w-[2.5rem] h-[2.5rem] cursor-pointer flex list-none mt-[0.3rem] text-center transition-all duration-200 align-baseline whitespace-nowrap select-none -webkit-select-none touch-manipulation hover:bg-[#474747]'> 
+            <BarsIcon/>
+          </button>
+        </div>
       </div>
     )
   }
 
   const BotonConfiguracionPrestamo = () => {
     return (
-      <button>⚙</button>
+      <div>
+        <GearIcon/>
+      </div>
+      
+    )
+  }
+
+  const BotonFinalizarPrestamo = () => {
+    return (
+      <div>
+        <CheckIcon/>
+      </div>
+      
     )
   }
 
@@ -275,6 +313,18 @@ const Lista = () => {
     )
   }
 
+  //Div fecha Limite (la función verifica si el prestamo tiene alguna fecha limite que mostrar)
+/*
+  const DivFechaLimite = ({fechaLimiteOGuion}: { fechaLimiteOGuion: string }) => {
+    if (fechaLimiteOGuion == '"-"') {
+      return null
+    } else {
+      return (
+        <div id="divFechaLimite" className='bg-[#585858] h-1/4 rounded-r-full pr-4 mt-1 pl-5 text-white rounded-lg w-60 font-sans font-semibold shadow-1'>Fecha limite:{fechaLimiteOGuion}</div>
+      )
+    }
+  }
+*/
   //State que guarda: cada cuantos dias aumentar el cobro, el aumento fijo
 
   const [cadaCuantosDias,setCadaCuantosDias] = useState(1)
@@ -314,21 +364,48 @@ const Lista = () => {
 
   return (
     <>
-    <div id="divPrincipal" className='flex flex-col w-[80rem] m-12 '>
+    <div id="divPrincipal" className='flex flex-col w-[80rem] duration-500 left-0 m-12'>
       <div className='flex flex-row relative'>
         <Buscador nombreBuscador={nombreBuscador} cambiarNombreBuscador={cambiarNombreBuscador}/>
         <BotonNuevoPrestamo/>
       </div>
-      <div id="probandoEncerrarDivLista" className='w-[73rem] shadow-1 shadow-interno bg-oscuro rounded-1 h-[33rem]'>
+      <div id="probandoEncerrarDivLista" className='w-[73rem] shadow-1 shadow-interno bg-[#333333] rounded-1 h-[33rem]'>
         <div id="divLista" className='w-11/12 overflow-y-auto bg-transparent rounded-1 h-[33rem]'> {/*Después subir por que eran 33 rem*/}
-          <ul className='w-11/12'>
+  
+          
+        
+          <ul className='w-full'>
+            
             {prestamos.map((prestamo, index) => {
               if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
                 return (
-                  <div className="m-2 w-11/12" key={index}>
-                    <BotonConfiguracionPrestamo/>
-                    <li>{[JSON.stringify(prestamo["Nombre"]),JSON.stringify(prestamo["Dias restantes"]),JSON.stringify(prestamo["Cobro"]),JSON.stringify(prestamo["Detalles"]),JSON.stringify(prestamo["Fecha limite"])]}</li>
-                    <button onClick={() => handleFinalizarPrestamo(index)}>X</button>
+                  <div className=" w-[100%] h-28 flex-row items-center justify-center flex" key={index}>
+                    <div className='border border-2 w-[97%] h-[95%] border-[#313131] rounded-3xl bg-opacity-[10%] bg-gray-400 flex flex-row'>
+                      <div className='flex flex-col overflow-hidden w-[28%]'>
+                        <div className='h-[70%] w-[95%] overflow-hidden flex items-end ml-8 text-[#d3d3d3] font-medium'>{prestamo["Nombre"]}</div>
+                        <div className='h-[30%] w-[95%] mb-8 flex items-center ml-8 text-[#969696] font-normal text-sm'>Fecha: {prestamo["Fecha limite"]}</div>
+                      </div>
+                      <div className='w-[20%] flex items-center box-border m-0 p-0 justify-center text-[#969696] font-normal text-sm'>
+                        En x dias aumenta el cobro
+                      </div>
+                      <div className='w-[20%] my-2.5 flex ml-6 items-center text-center box-border m-0 p-0 justify-center text-[#969696] font-normal text-sm'>
+                        {prestamo["Detalles"]}
+                      </div>
+                      <div className='w-[15%] flex items-center text-center box-border m-0 p-0 justify-center text-[#d3d3d3] font-medium'>
+                        ${JSON.stringify(prestamo["Cobro"])}
+                      </div>
+                      <div className='w-[17%] flex items-center text-center box-border m-0 p-0 justify-center'>
+                        <div className='w-[40%] flex flex-row gap-4 items-center text-center box-border m-0 p-0 justify-center'>
+        
+                          <BotonConfiguracionPrestamo/>   {/*hover:bg-[#969696]*/}
+                          <div onClick={() => handleFinalizarPrestamo(index)}>
+                            <BotonFinalizarPrestamo/>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 );
               } else {

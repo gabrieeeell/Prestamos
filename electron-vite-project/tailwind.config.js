@@ -17,6 +17,9 @@ module.exports = {
       backgroundColor: {
         'oscuro': '#333333',
       },
+      translate: {
+        '7.5rem': '7.5rem', 
+      },
     },
   },
   plugins: [],
