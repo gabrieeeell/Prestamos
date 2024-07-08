@@ -23,9 +23,9 @@ app.add_middleware(
 #instrucciones en excalidraw
 
 """Ideas"""
-#Que el engranaje gire cuando pones el mouse encima de el
 #Un indicativo de cuantos dias faltan para que se acumule denuevo(?
 #Cuando un prestamo se pasa de su fecha de devolución, este cambie de color
+#Botones de info o alguna forma en que el usuario pueda ententender como funciona cada cosa
 #Haya una parte de configuración del prestamo que te deje cambiar el interes, lo que pasa cuando se vence el plazo, etc, ->
 #-> una parte para cambiar el cobro a uno fijo en el momento, poner que se deje de acumular a partir de ahora (esas 2 ideas deberian ir)
 #Cada prestamo deberia tener un ticket para que desaparezca, una vez se aprete el ticket, estos se deberian ir a un historial, que estara
@@ -138,3 +138,10 @@ async def obtenerDatos():
 async def borrarPrestamo(id : str):
     dbClient.local.prestamos.find_one_and_delete({"_id": ObjectId(id)})
     return "bien"
+
+@app.put("/actualizarPrestamo/{id}/{nombre}")
+async def actualizarPrestamos(id : str, nombre : str):
+    dbClient.local.prestamos.find_one_and_update({"_id": ObjectId(id)},
+                                                 { '$set': { "Nombre" : nombre} })
+    
+    return ""
