@@ -20,7 +20,7 @@ const Buscador = ({ nombreBuscador, cambiarNombreBuscador }: { nombreBuscador: s
   return (
     <>
       <svg className="absolute left-2 top-[0.7rem] fill-[#9e9ea7] w-[1.3rem] h-[1.3rem]" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
-      <input id="buscador" className='shadow-1 w-[50rem] h-[40px] leading-[28px] px-4 pl-10 border-2 border-transparent rounded-lg outline-none text-[#9594ad] placeholder-[#9e9ea7] focus:outline-none focus:border-[rgba(63,62,63,0.4)] focus:shadow-[0_5px_15px_rgba(17,17,17,0.35)] hover:outline-none hover:border-[rgba(63,62,63,0.4)] hover:shadow-[0_5px_15px_rgba(17,17,17,0.35)] transition duration-300 ease-in-out' value={nombreBuscador} onChange={(event) => cambiarNombreBuscador(event.target.value)} placeholder='Buscar por nombre'></input>
+      <input id="buscador" className='shadow-1 w-[53rem] h-[40px] leading-[28px] px-4 pl-10 border-2 border-transparent rounded-lg outline-none text-[#9594ad] placeholder-[#9e9ea7] focus:outline-none focus:border-[rgba(63,62,63,0.4)] focus:shadow-[0_5px_15px_rgba(17,17,17,0.35)] hover:outline-none hover:border-[rgba(63,62,63,0.4)] hover:shadow-[0_5px_15px_rgba(17,17,17,0.35)] transition duration-300 ease-in-out' value={nombreBuscador} onChange={(event) => cambiarNombreBuscador(event.target.value)} placeholder='Buscar por nombre'></input>
     </>
   )
 };
@@ -88,9 +88,13 @@ const Lista = () => {
     acumulacionPorcentual:number,
     detallesNuevoPrestamo:string
   ){
+    if (detallesNuevoPrestamo == "") {
+      detallesNuevoPrestamo = "-"
+    }
     await axios.post(
       `http://127.0.0.1:8000/insertarMonto/${nombrePrestamo}/${tipoCobro}/${fechaLimitePrestamo}/${diasParaDevolucion}/${cobroFinal}/${opcionCobroFinal}/${cobroInicial}/${cadaCuantosDiasAumenta}/${acumulacionFija}/${acumulacionPorcentual}/${detallesNuevoPrestamo}`)
-
+    
+    setVentanaNuevoPrestamoIsOpen(false)
     obtenerPrestamos()
   }
   async function actualizarPrestamo(index:number, nuevoNombre = "Cambiado") {
@@ -131,11 +135,18 @@ const Lista = () => {
     if (!isOpen) return null;
   
     return (
-      <div id="confirmarFinalizacionPrestamoDiv" className='bg-gray-700'>
-        <h2>Estas seguro de querer finalizar este prestamo?</h2>
-        <button onClick={() => setConfirmarFinalizacionIsOpen(false)}>Cancelar</button>
-        <button onClick={() => borrarPrestamo(index)}>Confirmar</button>
-      </div>
+      <>
+        <div id="fondoNegroVentanaFinalizar" className='absolute w-[100%] h-[100%] bg-black opacity-40'></div>
+        <div id="FinalizarPrestamoDiv" className='bg-[#2c2c2c] shadow-2xl border-[#313131] p-4 border-2 w-[35rem] h-[11rem] rounded-2xl box-border absolute m-auto left-0 right-0 top-0 bottom-4' >
+          <div className='flex flex-col justify-center items-center'>
+            <span className="flex flex-col h-[3.5rem] justify-center items-center mt-3 mb-1 text-base font-medium text-[white]">¿Estas seguro de querer finalizar este prestamo?</span>
+            <div className='flex flex-row justify-center items-center h-[4rem] gap-6'>
+              <button className="w-[6.6rem] text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => setConfirmarFinalizacionIsOpen(false)}>Cancelar</button>
+              <button className="w-[6.6rem] text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => borrarPrestamo(index)}>Confirmar</button>
+            </div>
+          </div>
+        </div>
+      </>
     )
   }
 
@@ -144,7 +155,7 @@ const Lista = () => {
   const BotonNuevoPrestamo = () => {
 
     return (
-      <button id='botonNuevoPrestamo' className='shadow-1 justify-center bg-[#406b2e] text-white inline-flex items-center border-0 rounded-lg box-border cursor-pointer font-sans font-semibold text-[1rem] leading-[1rem] w-[15rem] max-w-[480px] min-h-[40px] min-w-0 overflow-hidden px-0 pl-[10px] pr-[10px] ml-8 text-center touch-manipulation transition duration-[0.167s] ease-[cubic-bezier(0.4,0,0.2,1)] select-none -webkit-select-none align-middle mb-4 hover:bg-[#375a28] hover:text-white focus:bg-[#375a28] focus:text-white active:bg-[#2f4d22] active:text-[rgba(255,255,255,0.7)] disabled:cursor-not-allowed disabled:bg-[rgba(0,0,0,0.08)] disabled:text-[rgba(0,0,0,0.3)]' onClick={() => setVentanaNuevoPrestamoIsOpen(true)}>Crear nuevo prestamo</button>
+      <button id='botonNuevoPrestamo' className='shadow-1 justify-center bg-[#406b2e] text-white inline-flex items-center border-0 rounded-lg box-border cursor-pointer font-sans font-semibold text-[1rem] leading-[1rem] w-[16rem] max-w-[480px] min-h-[40px] min-w-0 overflow-hidden px-0 pl-[10px] pr-[10px] ml-9 text-center touch-manipulation transition duration-[0.167s] ease-[cubic-bezier(0.4,0,0.2,1)] select-none -webkit-select-none align-middle mb-4 hover:bg-[#375a28] hover:text-white focus:bg-[#375a28] focus:text-white active:bg-[#2f4d22] active:text-[rgba(255,255,255,0.7)] disabled:cursor-not-allowed disabled:bg-[rgba(0,0,0,0.08)] disabled:text-[rgba(0,0,0,0.3)]' onClick={() => setVentanaNuevoPrestamoIsOpen(true)}>Crear nuevo prestamo</button>
     )
   }
 
@@ -249,19 +260,19 @@ const Lista = () => {
     return (
       <>
         <div id="fondoNegroVentanaNuevoPrestamo" className='absolute w-[100%] h-[100%] bg-black opacity-40'></div>
-        <div id="ventanaNuevoPrestamoDiv" className='bg-[#333333] border-[#313131] border-2 w-[60rem] h-[37rem] rounded-1 absolute m-auto left-0 right-0 top-0 bottom-4'>
+        <div id="ventanaNuevoPrestamoDiv" className='bg-[#333333] shadow-interno border-[#313131] p-4 border-2 w-[60rem] h-[36rem] rounded-1 box-border absolute m-auto left-0 right-0 top-0 bottom-4'>
           <div className='flex flex-row w-[100%]'>
             <div className='flex flex-col w-[50%] justify-center'>
             <div>
-              <label htmlFor='inputNombre' className="block my-2 text-sm font-medium text-[white]">Nombre:</label>
-              <input  defaultValue={nombreNuevoPrestamo} onBlur={(e) => setNombreNuevoPrestamo(e.target.value)} type="text" id="inputNombre" className="text-[#bebebe] w-[95%] bg-[#272727] border border-[#3d3d3d] text-sm rounded-lg  block p-2.5 focus:outline-none focus:border-[#727272] focus:ring-[white]" placeholder="Nombre..." required />
+              <label htmlFor='inputNombre' className="block mt-2 mb-1 text-sm font-medium text-[white]">Nombre:</label>
+              <input  defaultValue={nombreNuevoPrestamo} onBlur={(e) => setNombreNuevoPrestamo(e.target.value)} type="text" id="inputNombre" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="Nombre..." required />
             </div>
-              <label htmlFor="selectTipoPrestamo" className="mt-3 block text-sm font-medium text-[white]">Tipo de cobro:</label>                         
+              <label htmlFor="selectTipoPrestamo" className="mt-3 mb-1 block text-sm font-medium text-[white]">Tipo de cobro:</label>                         
               <Select className='mb-[0.35rem]' id="selectTipoPrestamo" options={opcionesFechaOAcumulativo} styles={colorStyles} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
             </div>
             <div className='flex flex-col w-[50%] justify-center'>
-              <label htmlFor='detallesInput' className="block my-2 text-sm font-medium text-[white]">Detalles:</label>
-              <textarea id='detallesInput' defaultValue={detallesNuevoPrestamo} onBlur={(e) => setdetallesNuevoPrestamo(e.target.value)} className="h-[7rem] resize-none mb-[0.35rem] w-[95%] text-[white] bg-[#272727] border border-[#333333] text-sm rounded-lg focus:outline-none focus:border-[white] focus:ring-[white]" placeholder='Detalles...'></textarea>
+              <label htmlFor='detallesInput' className="block mt-2 mb-1 text-sm font-medium text-[white]">Detalles:</label>
+              <textarea id='detallesInput' defaultValue={detallesNuevoPrestamo} onBlur={(e) => setdetallesNuevoPrestamo(e.target.value)} className="h-[7.6rem] resize-none p-2 mb-[0.35rem] w-[95%] bg-[#272727] border text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] text-sm box-border rounded-lg focus:outline-none focus:ring-[white]" placeholder='Detalles...'></textarea>
             </div>
             
           </div>
@@ -301,7 +312,7 @@ const Lista = () => {
 
   const [aumentarCobroIsOpen,setAumentarCobroIsOpen] = useState("Dejar cobro fijo");
 
-  const [cobro,setCobro] = useState(Number())
+  const [cobro,setCobro] = useState(Number)
 
   const opcionesFijoOAumentar = [
     {label:"Dejar cobro fijo",value:"Dejar cobro fijo"},
@@ -328,24 +339,29 @@ const Lista = () => {
       return (<DivAumentoCobro aumentarCobroIsOpen = {"Aumentar cobro"}/>)
       
     }
-
+ 
     const filtroDiasPasados = (date:Date) => new Date() <= date
 
     return (
       <div id="seccionFechaLimiteSelected" className=''>
         <div className="divFechaLimiteODias">
-          <div className='flex flex-row items-center gap-4'>
-            <label htmlFor="selectFecha" className="block text-sm font-medium text-[white]">Elegir fecha</label>
-            <DatePicker id="selectFecha" className='text-[white] font-normal bg-[#272727] border border-[#333333]  text-sm rounded-lg  block p-2.5 focus:outline-none focus:border-[white] focus:ring-[white]' selected={fechaNuevoPrestamoDate} dateFormat="dd/MM/yyyy" filterDate={filtroDiasPasados} onChange={(date:Date) => separarFechaStringYDate(date)}/>
-            <label htmlFor="inputODias" className="block text-sm font-medium text-[white]">O dias</label>
-            <input  defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))} type="text" id="inputODias" className="text-[white] w-[20%] bg-[#272727] border border-[#333333] text-sm rounded-lg  block p-2.5 focus:outline-none focus:border-[white] focus:ring-[white]" placeholder="Días"  />
+          <div className='flex flex-row items-center gap-4 mt-3'>
+            <label htmlFor="selectFecha" className="block text-sm font-medium text-[white]">Fecha de cobro:</label>
+            <DatePicker id="selectFecha" className='font-normal bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]' selected={fechaNuevoPrestamoDate} dateFormat="dd/MM/yyyy" filterDate={filtroDiasPasados} onChange={(date:Date) => separarFechaStringYDate(date)}/>
+            <label htmlFor="inputODias" className="block text-sm font-medium text-[white]">+</label>
+            <input  defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))} type="number" id="inputODias" className="w-[20%] bg-[#272727] border text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] text-sm rounded-lg  block p-2.5 focus:outline-none focus:ring-[white]" placeholder="Días"  />
+            <label htmlFor="inputODias" className="block text-sm font-medium text-[white]">días</label>
           </div>
-          <div>
-            <label htmlFor="inputCobro" className="block text-sm font-medium text-[white]">Cobro: </label>
-            <input  defaultValue={cobro} onBlur={(event) => setCobro(Number(event.target.value))} type="text" id="inputCobro" className="text-[white] w-[20%] bg-[#272727] border border-[#333333] text-sm rounded-lg  block p-2.5 focus:outline-none focus:border-[white] focus:ring-[white]" placeholder="" />
+          <div className='flex flex-row w-[100%] mt-5'>
+            <div className='flex flex-col w-[50%]'>
+              <label htmlFor="inputCobro" className="block text-sm mb-1 font-medium text-[white]">Cobro: </label>
+              <input type="number" defaultValue={cobro} onBlur={(event) => setCobro(Number(event.target.value))} id="inputCobro" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="" />
+            </div>
+            <div className='flex flex-col w-[50%]'>
+              <label htmlFor='selectOpcionAlPasarse' className="block mb-1 text-sm font-medium text-[white]">Acción al pasarse la fecha:</label>
+              <Select id='selectOpcionAlPasarse' options={opcionesFijoOAumentar} onChange={(event) => selectFijoOAumentar(event)} styles={colorStyles} defaultValue={{label:aumentarCobroIsOpen,value:aumentarCobroIsOpen}}/>
+            </div>
           </div>
-          <label htmlFor='selectOpcionAlPasarse' className="block text-sm font-medium text-[white]">Acción al pasarse la fecha:</label>
-          <Select id='selectOpcionAlPasarse' options={opcionesFijoOAumentar} onChange={(event) => selectFijoOAumentar(event)} styles={colorStyles} defaultValue={{label:aumentarCobroIsOpen,value:aumentarCobroIsOpen}}/>
           <DivAumentoCobro aumentarCobroIsOpen = {aumentarCobroIsOpen}/>
         </div>
       </div>
@@ -354,34 +370,21 @@ const Lista = () => {
 
   //State para guardar el cobro inicial
 
-  const [cobroInicial, setCobroInicial] = useState(0)
+  const [cobroInicial, setCobroInicial] = useState(Number)
 
   // Veo que se selecciono en fechaLimiteOAcumulativoSelected para ver si tengo que ver un cobro inicial o no (en excalidraw es claro)
 
   const CobroInicial = ({cobroInicialIsOpen = "Fecha limite"}) => {
     if (cobroInicialIsOpen == "Fecha limite") return null;
-
     return (
 
       <div>
-          <label htmlFor='inputCobroInicial' className="block my-2 text-sm font-medium text-[white]">Cobro inicial:</label>
-          <input id='inputCobroInicial' defaultValue={cobroInicial} onBlur={(event) => setCobroInicial(Number(event.target.value))} type="text" className="text-[white] w-[95%] bg-[#272727] border border-[#333333] text-sm rounded-lg  block p-2.5 focus:outline-none focus:border-[white] focus:ring-[white]" placeholder=""/>
+          <label htmlFor='inputCobroInicial' className="block mt-2 mb-1 text-sm font-medium text-[white]">Cobro inicial:</label>
+          <input id='inputCobroInicial' defaultValue={cobroInicial} onBlur={(event) => setCobroInicial(Number(event.target.value))} type="number" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder=""/>
       </div>
     )
   }
 
-  //Div fecha Limite (la función verifica si el prestamo tiene alguna fecha limite que mostrar)
-/*
-  const DivFechaLimite = ({fechaLimiteOGuion}: { fechaLimiteOGuion: string }) => {
-    if (fechaLimiteOGuion == '"-"') {
-      return null
-    } else {
-      return (
-        <div id="divFechaLimite" className='bg-[#585858] h-1/4 rounded-r-full pr-4 mt-1 pl-5 text-white rounded-lg w-60 font-sans font-semibold shadow-1'>Fecha limite:{fechaLimiteOGuion}</div>
-      )
-    }
-  }
-*/
   //State que guarda: cada cuantos dias aumentar el cobro, el aumento fijo
 
   const [cadaCuantosDias,setCadaCuantosDias] = useState(1)
@@ -398,18 +401,18 @@ const Lista = () => {
         <div className='flex flex-row w-[100%]'>
           <div className='flex flex-col w-[50%]'>
             <div className=''>
-                <label htmlFor='inputAumentoPorcentual' className="block my-2 text-sm font-medium text-[white]">Aumento porcentual:  %</label>
-                <input id='inputAumentoPorcentual' defaultValue={aumentoPorcentual} onBlur={(event) => setAumentoPorcentual(Number(event.target.value))} type="text" className="text-[white] w-[95%] bg-[#272727] border border-[#333333] text-sm rounded-lg  block p-2.5 focus:outline-none focus:border-[white] focus:ring-[white]" placeholder=""/>
+                <label htmlFor='inputAumentoPorcentual' className="block mt-2 mb-1 text-sm font-medium text-[white]">Aumento porcentual:  %</label>
+                <input id='inputAumentoPorcentual' defaultValue={aumentoPorcentual} onBlur={(event) => setAumentoPorcentual(Number(event.target.value))} type="number" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder=""/>
             </div>
             <div>
-                  <label htmlFor='inputCadaCuantosDias' className="block my-2 text-sm font-medium text-[white]">Cada cuantos días:</label>
-                  <input id='inputCadaCuantosDias' defaultValue={cadaCuantosDias} onBlur={(event) => setCadaCuantosDias(Number(event.target.value))} type="text" className="text-[white] w-[95%] bg-[#272727] border border-[#333333] text-sm rounded-lg  block p-2.5 focus:outline-none focus:border-[white] focus:ring-[white]" placeholder=""/>
+                  <label htmlFor='inputCadaCuantosDias' className="block mt-2 mb-1 text-sm font-medium text-[white]">Cada cuantos días:</label>
+                  <input id='inputCadaCuantosDias' defaultValue={cadaCuantosDias} onBlur={(event) => setCadaCuantosDias(Number(event.target.value))} type="number" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder=""/>
             </div>
           </div>
           <div className='flex flex-col w-[50%]'>
             <div className=''>
-                <label htmlFor='inputAumentoFijo' className="block my-2 text-sm font-medium text-[white]">Aumento fijo:</label>
-                <input id='inputAumentoFijo' defaultValue={aumentoFijo} onBlur={(event) => setAumentoFijo(Number(event.target.value))} type="text" className="text-[white] w-[95%] bg-[#272727] border border-[#333333] text-sm rounded-lg  block p-2.5 focus:outline-none focus:border-[white] focus:ring-[white]" placeholder=""/>
+                <label htmlFor='inputAumentoFijo' className="block mt-2 mb-1 text-sm font-medium text-[white]">Aumento fijo:</label>
+                <input id='inputAumentoFijo' defaultValue={aumentoFijo} onBlur={(event) => setAumentoFijo(Number(event.target.value))} type="number" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder=""/>
             </div>
             <CobroInicial cobroInicialIsOpen = {fechaLimiteOAcumulativoSelected}/>
           </div>
@@ -427,8 +430,8 @@ const Lista = () => {
 
   return (
     <>
-    <div id="divPrincipal" className='flex flex-col w-[80rem] duration-500 left-0 m-12'>
-      <div className='flex flex-row relative'>
+    <div id="divPrincipal" className='flex flex-col w-[80rem] duration-500 m-12'>
+      <div className='flex flex-row relative ml-3'>
         <Buscador nombreBuscador={nombreBuscador} cambiarNombreBuscador={cambiarNombreBuscador}/>
         <BotonNuevoPrestamo/>
       </div>
