@@ -5,13 +5,12 @@ import axios from "axios";
 import Select, { SingleValue } from "react-select"
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format } from 'date-fns';
+import { format,addDays } from 'date-fns';
 import BarsIcon from './assets/bars';
 import GearIcon from './assets/gear';
 import CheckIcon from './assets/check';
 import HistoryIcon from './assets/history';
 import {colorStyles} from './styles/select.tsx'
-
 
 const Buscador = ({ nombreBuscador, cambiarNombreBuscador }: { nombreBuscador: string, cambiarNombreBuscador: (value: string) => void }) => {
 
@@ -44,13 +43,30 @@ const Lista = () => {
   //Lo que pasa cuando se apreta la tuerca
 
   function handleActualizarPrestamo(cambiarIndex = 0) {
-    setConfiguracionPrestamoIsOpen(true)
+    setActualizandoPrestamo(true)
+    setVentanaNuevoPrestamoIsOpen(true)
     setIndexConfigurarPrestamo(cambiarIndex)
+    setNombreNuevoPrestamo(prestamos[cambiarIndex]["Nombre"])
+    setdetallesNuevoPrestamo(prestamos[cambiarIndex]["Detalles"])
+    setCobro(prestamos[cambiarIndex]["Cobro"])
+    setCadaCuantosDias(prestamos[cambiarIndex]["Cada cuantos dias aumenta"])
+    setAumentoFijo(prestamos[cambiarIndex]["Acumulación fija"])
+    setAumentoPorcentual(prestamos[cambiarIndex]["Acumulación porcentual"])
+    setCobroInicial(prestamos[cambiarIndex]["Cobro inicial"])
+    setCobroActual(prestamos[cambiarIndex]["Cobro"])
+    
+    if (prestamos[cambiarIndex]["Fecha limite"] != "-") {
+      setFechaNuevoPrestamoDate(addDays((new Date(prestamos[cambiarIndex]["Fecha limite"])),1))
+    } else {
+      setFechaNuevoPrestamoDate(new Date())
+    }
+    setFechaLimiteOAcumulativoSelected(prestamos[cambiarIndex]["Tipo cobro"])
+    setAumentarCobroIsOpen(prestamos[cambiarIndex]["Accion al pasar fecha"])
   }
 
   // State que se usara para guardar los prestamos
 
-  const [prestamos, cambiarPrestamos] = useState([{"_id":"","Nombre":"","Dias restantes":7777,"Cobro":Number,"Detalles":"","Fecha limite":""}]);
+  const [prestamos, cambiarPrestamos] = useState([{"_id":"","Nombre":"","Dias restantes":7777,"Cobro":Number,"Detalles":"","Fecha limite":"","Cobro inicial":Number,"Tipo cobro":"","Accion al pasar fecha":"","Cada cuantos dias aumenta":Number,"Acumulación fija":Number,"Acumulación porcentual":Number}]);
   
   // Solicitudes
 
@@ -106,7 +122,6 @@ const Lista = () => {
 
   //States que manejan cuando se abre la ventana de configuración de prestamo
 
-  const [configuracionPrestamoIsOpen,setConfiguracionPrestamoIsOpen] = useState(false)
   const [indexConfigurarPrestamo,setIndexConfigurarPrestamo] = useState(0)
 
   //States que manejan cuando abre la ventana de confirmar y ayudan a enviarle el index que se tiene que borrar
@@ -114,19 +129,7 @@ const Lista = () => {
   const [confirmarFinalizacionIsOpen, setConfirmarFinalizacionIsOpen] = useState(false)
   const [indexConfirmarFinalizacion, setIndexConfirmarFinalizacion] = useState(0)
 
-
-  //Ventana que aparece al apretar la tuerca
-
-  const ConfiguracionPrestamo = ({isOpen = false, index = -1}) => {
-    if (!isOpen) return null;
-
-    return (<>
-    <div className='w-[50%] h-[50%] absolute top-0 left-0 right-0 bottom-0 m-auto bg-slate-500'>
-      <button onClick={() => setConfiguracionPrestamoIsOpen(false)}>cerrar</button>
-      <button onClick={() => actualizarPrestamo(index)}>Actualizar</button>
-    </div>
-    </>)
-  }
+  const [actualizandoPrestamo, setActualizandoPrestamo] = useState(false)
 
   //Ventana que se abre al apretar el ticket
 
@@ -152,10 +155,16 @@ const Lista = () => {
 
   //Boton Nuevo prestamo
 
+  function handleAbrirCrearNuevoPrestamo() {
+    setActualizandoPrestamo(false)
+    setVentanaNuevoPrestamoIsOpen(true)
+    setvolverACalcularCobroState(false)
+  }
+
   const BotonNuevoPrestamo = () => {
 
     return (
-      <button id='botonNuevoPrestamo' className='shadow-1 justify-center bg-[#406b2e] text-white inline-flex items-center border-0 rounded-lg box-border cursor-pointer font-sans font-semibold text-[1rem] leading-[1rem] w-[16rem] max-w-[480px] min-h-[40px] min-w-0 overflow-hidden px-0 pl-[10px] pr-[10px] ml-9 text-center touch-manipulation transition duration-[0.167s] ease-[cubic-bezier(0.4,0,0.2,1)] select-none -webkit-select-none align-middle mb-4 hover:bg-[#375a28] hover:text-white focus:bg-[#375a28] focus:text-white active:bg-[#2f4d22] active:text-[rgba(255,255,255,0.7)] disabled:cursor-not-allowed disabled:bg-[rgba(0,0,0,0.08)] disabled:text-[rgba(0,0,0,0.3)]' onClick={() => setVentanaNuevoPrestamoIsOpen(true)}>Crear nuevo prestamo</button>
+      <button id='botonNuevoPrestamo' className='shadow-1 justify-center bg-[#406b2e] text-white inline-flex items-center border-0 rounded-lg box-border cursor-pointer font-sans font-semibold text-[1rem] leading-[1rem] w-[16rem] max-w-[480px] min-h-[40px] min-w-0 overflow-hidden px-0 pl-[10px] pr-[10px] ml-9 text-center touch-manipulation transition duration-[0.167s] ease-[cubic-bezier(0.4,0,0.2,1)] select-none -webkit-select-none align-middle mb-4 hover:bg-[#375a28] hover:text-white focus:bg-[#375a28] focus:text-white active:bg-[#2f4d22] active:text-[rgba(255,255,255,0.7)] disabled:cursor-not-allowed disabled:bg-[rgba(0,0,0,0.08)] disabled:text-[rgba(0,0,0,0.3)]' onClick={() => handleAbrirCrearNuevoPrestamo()}>Crear nuevo prestamo</button>
     )
   }
 
@@ -251,6 +260,64 @@ const Lista = () => {
     )
   }
 
+  async function handleCrearOActualizar(
+    nombrePrestamo:string,
+    tipoCobro:string,
+    fechaLimitePrestamo:string,
+    diasParaDevolucion:number,
+    cobroFinal:number,
+    opcionCobroFinal:string,
+    cobroInicial:number,
+    cadaCuantosDiasAumenta:number,
+    acumulacionFija:number,
+    acumulacionPorcentual:number,
+    detallesNuevoPrestamo:string
+  ) {
+    if (detallesNuevoPrestamo == "") {
+      detallesNuevoPrestamo = "-"
+    }
+    if (actualizandoPrestamo == false) {
+      await axios.post(
+        `http://127.0.0.1:8000/insertarMonto/${nombrePrestamo}/${tipoCobro}/${fechaLimitePrestamo}/${diasParaDevolucion}/${cobroFinal}/${opcionCobroFinal}/${cobroInicial}/${cadaCuantosDiasAumenta}/${acumulacionFija}/${acumulacionPorcentual}/${detallesNuevoPrestamo}`)
+        obtenerPrestamos()
+        setVentanaNuevoPrestamoIsOpen(false)
+    } else {
+
+    }
+  }
+
+  function textoBotonCrearOActualizar() {
+    if (actualizandoPrestamo == false) {
+      return "Crear nuevo prestamo"
+    } else {
+      return "Actualizar prestamo"
+    }
+  }
+
+  const InputCobro = ({ volverACalcularCobroState = false }) => {
+    function cobroOCobroActual() {
+      if (actualizandoPrestamo == false) {
+        return "Cobro:"
+      } else {
+        return "Cobro actual:"
+      }
+    }
+    if (volverACalcularCobroState == false) return (
+      <div className='flex flex-col w-[50%]'>
+          <label htmlFor="inputCobro" className="block text-sm mb-1 font-medium text-[white]">{cobroOCobroActual()}</label>
+          <input type="number" defaultValue={cobro} onBlur={(event) => setCobro(Number(event.target.value))} id="inputCobro" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="" />
+      </div>
+    )
+    return (
+      <div className='flex flex-col w-[50%]'>
+          <label htmlFor="inputCobro" className="block text-sm mb-1 font-medium text-[#acacac]">{cobroOCobroActual()}</label>
+          <input disabled type="number" defaultValue={cobroActual} onBlur={(event) => setCobro(Number(event.target.value))} id="inputCobro" className="w-[95%] bg-[#2c2c2c] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#8a8a8a] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="" />
+      </div>
+    )
+  
+  }
+
+
   //Ventana Nuevo Prestamo
 
   const VentanaNuevoPrestamo = ({isOpen = false}) => {
@@ -281,9 +348,9 @@ const Lista = () => {
 
           <div className='absolute flex flex-row justify-center ml-[33%] items-center gap-4 mr-5 bottom-0'>
             <div className="divBotonCrearNuevoPrestamo">
-              <button className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => crearPrestamo(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamoString,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual,detallesNuevoPrestamo)}>Crear nuevo prestamo</button>
+              <button className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => handleCrearOActualizar(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamoString,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual,detallesNuevoPrestamo)}>{textoBotonCrearOActualizar()}</button>
             </div>        
-            <button onClick={() => setVentanaNuevoPrestamoIsOpen(false)} id="botonCancelarNuevoPrestamo" type="button" className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2">Cancelar</button>
+              <button onClick={() => setVentanaNuevoPrestamoIsOpen(false)} id="botonCancelarNuevoPrestamo" type="button" className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2">Cancelar</button>
             </div>
           </div>
       </>
@@ -333,6 +400,8 @@ const Lista = () => {
 
   }
 
+  const [volverACalcularCobroState,setvolverACalcularCobroState] = useState(false)
+
   const SeccionFechaLimiteOAcumulativo = ({fechaLimiteIsSelected = "Fecha limite"}) =>{
 
     if (fechaLimiteIsSelected == "Acumulativo") {
@@ -341,6 +410,23 @@ const Lista = () => {
     }
  
     const filtroDiasPasados = (date:Date) => new Date() <= date
+
+    function handleCambiarVolverACalcular(event:any) {
+      setvolverACalcularCobroState(event.target.checked)
+    }
+
+    const VolverACalcularCobro = () => {
+      if (!actualizandoPrestamo) return null;
+      else {
+        return(
+          <div className="flex items-center ml-5">
+              <input checked={volverACalcularCobroState} onChange={handleCambiarVolverACalcular} id="checkBoxCalcularCobro" type="checkbox" value="" className="border relative custom-checkbox appearance-none w-4 h-4 bg-[#3E3F40] border-[#333333]  rounded focus:ring-[white] focus:ring-1"></input>
+              <label htmlFor="checkBoxCalcularCobro" className="ms-2 text-sm font-medium text-white">Volver a calcular cobro</label>
+          </div>
+        )
+        
+      }
+    } 
 
     return (
       <div id="seccionFechaLimiteSelected" className=''>
@@ -351,12 +437,10 @@ const Lista = () => {
             <label htmlFor="inputODias" className="block text-sm font-medium text-[white]">+</label>
             <input  defaultValue={diasParaLaDevolucion} onBlur={(event) => setDiasParaLaDevolucion(Number(event.target.value))} type="number" id="inputODias" className="w-[20%] bg-[#272727] border text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] text-sm rounded-lg  block p-2.5 focus:outline-none focus:ring-[white]" placeholder="Días"  />
             <label htmlFor="inputODias" className="block text-sm font-medium text-[white]">días</label>
+            <VolverACalcularCobro/>
           </div>
           <div className='flex flex-row w-[100%] mt-5'>
-            <div className='flex flex-col w-[50%]'>
-              <label htmlFor="inputCobro" className="block text-sm mb-1 font-medium text-[white]">Cobro: </label>
-              <input type="number" defaultValue={cobro} onBlur={(event) => setCobro(Number(event.target.value))} id="inputCobro" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="" />
-            </div>
+            <InputCobro volverACalcularCobroState={volverACalcularCobroState}/>
             <div className='flex flex-col w-[50%]'>
               <label htmlFor='selectOpcionAlPasarse' className="block mb-1 text-sm font-medium text-[white]">Acción al pasarse la fecha:</label>
               <Select id='selectOpcionAlPasarse' options={opcionesFijoOAumentar} onChange={(event) => selectFijoOAumentar(event)} styles={colorStyles} defaultValue={{label:aumentarCobroIsOpen,value:aumentarCobroIsOpen}}/>
@@ -426,6 +510,8 @@ const Lista = () => {
 
   const [nombreBuscador, cambiarNombreBuscador] = useState("");
 
+  const [cobroActual,setCobroActual] = useState(Number);
+
   //Lista de prestamos
 
   return (
@@ -483,7 +569,6 @@ const Lista = () => {
     </div>
     <MenuBoton3Rayas/>
     <ConfirmarFinalizarPrestamo isOpen={confirmarFinalizacionIsOpen} index={indexConfirmarFinalizacion}/>
-    <ConfiguracionPrestamo isOpen={configuracionPrestamoIsOpen} index={indexConfigurarPrestamo}/>
     <VentanaNuevoPrestamo isOpen={ventanaNuevoPrestamoIsOpen}/>
   </>
   )

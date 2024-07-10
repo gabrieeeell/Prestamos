@@ -15,13 +15,7 @@ app.add_middleware(
 )
 
 """Orden"""
-#Cual es el proposito de que el menu se mueva si no tapa absolutamente nada? (en vola con los iconos dara igual)
-#lo que pone en excalidraw
-#pensar en nuevo diseño para cada prestamo dentro de la lista (y hacerlo?)
-#Como hacer que no salga la scrollbar (que los tamaños esten bien bien ajustados)
-#Como hacer la wea de las ventanas por encima como la del nuevo prestamo (creo que modal)
-#instrucciones en excalidraw
-
+#Cuando se aprete crear prestamo, que todos los states vuelvan como a su estado "orginal" osea sin nada
 """Ideas"""
 #Un indicativo de cuantos dias faltan para que se acumule denuevo(?
 #Cuando un prestamo se pasa de su fecha de devolución, este cambie de color
@@ -55,7 +49,7 @@ def diasRestantes (tipoCobro,opcionCobroFinal,fechaLimite):
 
     #Fecha limite y no se ha pasado la fecha o no se selecciono que aumentara
 
-    if (tipoCobro == "Fecha limite" and opcionCobroFinal == "Dejar cobro fijo") or (tipoCobro == "Fecha limite" and int(str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual)[:-13]) >= 0 ):
+    if (tipoCobro == "Fecha limite" and opcionCobroFinal == "Dejar cobro fijo") or (tipoCobro == "Fecha limite" and int(datetimeToDias(fechaLimite)) >= 0 ):
         return datetimeToDias(fechaLimite) if datetime.strptime(fechaLimite, "%Y-%m-%d").date() != fechaActual else "0"
     
     elif tipoCobro == "Acumulativo":
@@ -76,7 +70,7 @@ def calcularCobro(tipoCobro,opcionCobroFinal,cobroFinal,cadaCuantosDiasAumenta,f
 
     diasPasados = abs( int( str(datetime.strptime(fechaInicial, "%Y-%m-%d").date() - datetime.now().date())[:-13] ) ) if datetime.strptime(fechaInicial, "%Y-%m-%d").date() != datetime.now().date() else 0
 
-    if (tipoCobro == "Fecha limite" and opcionCobroFinal == "Dejar cobro fijo") or (tipoCobro == "Fecha limite" and int(str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual)[:-13]) >= 0 ):
+    if (tipoCobro == "Fecha limite" and opcionCobroFinal == "Dejar cobro fijo") or (tipoCobro == "Fecha limite" and int(datetimeToDias(fechaLimite)) >= 0 ):
         return int(cobroFinal)
     
     elif tipoCobro == "Acumulativo" and cadaCuantosDiasAumenta != 0:
@@ -129,7 +123,13 @@ async def obtenerDatos():
          "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
                                prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"]),
          "Detalles":prestamo["Detalles"],
-         "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"])}  # Convertir ObjectId a str
+         "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"]),# Convertir ObjectId a str
+         "Cobro incial":prestamo["Cobro inical"],
+         "Tipo cobro":prestamo["Tipo cobro"],
+         "Accion al pasar fecha":prestamo["Opción cobro final"],
+         "Cada cuantos dias aumenta":prestamo["Cada cuantos dias aumenta"],
+         "Acumulación fija":prestamo["Acumulación fija"],
+         "Acumulación porcentual":prestamo["Acumulación porcentual"]}  
         for prestamo in dbClient.local.prestamos.find()
     ]
     return todosLosPrestamos
