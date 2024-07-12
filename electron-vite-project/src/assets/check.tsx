@@ -1,12 +1,5 @@
 import React, {useState} from 'react';
 
-{/*Se supone que esta wea del CheckIconProps es para poder pasarle una función como parametro al componente, nose por que chuca funciona*/}
-
-interface CheckIconProps {
-    finalizarPrestamo: (index: number) => void; // Especificamos que finalizarPrestamo toma un número como parámetro
-    index: {index:number}; // Añadimos la propiedad index al tipo CheckIconProps
-  }
-
 const CheckIcon= () => {
     const [isHovered, setIsHovered] = useState(false);
 

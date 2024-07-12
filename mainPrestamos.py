@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from db.client import dbClient
 from bson import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
+import motor.motor_asyncio
+import asyncio
 
 app = FastAPI()
 
@@ -139,7 +141,7 @@ async def obtenerDatos():
 @app.delete("/borrarPrestamo/{id}")
 async def borrarPrestamo(id : str):
     dbClient.local.historial.insert_one(dbClient.local.prestamos.find_one({"_id": ObjectId(id)}))
-    dbClient.local.historial.find_one_and_update({"_id": ObjectId(id)},{'$set':{'Fecha eliminación':str(fechaActual)}})
+    dbClient.local.historial.find_one_and_update({"_id": ObjectId(id)},{'$set':{'Fecha eliminación':str(fechaActual),"Dias para borrarse":14}})
     dbClient.local.prestamos.find_one_and_delete({"_id": ObjectId(id)})
     return None
 
@@ -191,17 +193,17 @@ async def actualizarPrestamosParcialmente(id : str, nombre : str,tipoCobro : str
 async def obtenerHistorial():
     prestamosDelHistorial = [
         {"Fecha eliminación":prestamo["Fecha eliminación"],
-         "_id":prestamo["_id"]}
-         for prestamo in dbClient.local.historial.find()
+         "_id":str(prestamo["_id"])}
+        for prestamo in dbClient.local.historial.find()
     ]
     for prestamo in prestamosDelHistorial:
-        
         if int(datetimeToDias(prestamo["Fecha eliminación"])) < -14:
             dbClient.local.historial.find_one_and_delete({"_id":ObjectId(prestamo["_id"])})
         else:
             dbClient.local.historial.find_one_and_update({"_id":ObjectId(prestamo["_id"])},{
                 "$set":{"Dias para borrarse":14 - abs(int(datetimeToDias(prestamo["Fecha eliminación"])))}})
-        todosLosPrestamos = [
+    
+    todosLosPrestamos = [
         {"Nombre":prestamo["Nombre"], 
          "_id": str(prestamo["_id"]),
          "Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
@@ -212,5 +214,11 @@ async def obtenerHistorial():
          "Dias para borrarse":prestamo["Dias para borrarse"]}  
         for prestamo in dbClient.local.historial.find()]
 
-        return todosLosPrestamos
+    return todosLosPrestamos
+    
+@app.delete("/recuperarPrestamo/{id}")
+async def recuperarPrestamo(id : str):
+    dbClient.local.prestamos.insert_one(dbClient.local.historial.find_one({"_id":ObjectId(id)}))
+    dbClient.local.historial.find_one_and_delete({"_id":ObjectId(id)})
+    return None
     

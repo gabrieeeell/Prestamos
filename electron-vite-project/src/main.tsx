@@ -11,11 +11,16 @@ import GearIcon from './assets/gear';
 import CheckIcon from './assets/check';
 import HistoryIcon from './assets/history';
 import {colorStyles} from './styles/select.tsx'
+import BackIcon from './assets/back.tsx';
 
-const Buscador = ({ nombreBuscador, cambiarNombreBuscador }: { nombreBuscador: string, cambiarNombreBuscador: (value: string) => void }) => {
+const Buscador = ({viendoHistorial,nombreBuscador, cambiarNombreBuscador }: {viendoHistorial:boolean ,nombreBuscador: string, cambiarNombreBuscador: (value: string) => void }) => {
 
-  
-
+  if (viendoHistorial == true) return (
+    <>
+      <svg className="absolute left-2 top-[0.7rem] fill-[#9e9ea7] w-[1.3rem] h-[1.3rem]" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
+      <input id="buscador" className='shadow-1 w-[71rem] h-[40px] leading-[28px] px-4 pl-10 border-2 border-transparent rounded-lg outline-none text-[#9594ad] placeholder-[#9e9ea7] focus:outline-none focus:border-[rgba(63,62,63,0.4)] focus:shadow-[0_5px_15px_rgba(17,17,17,0.35)] hover:outline-none hover:border-[rgba(63,62,63,0.4)] hover:shadow-[0_5px_15px_rgba(17,17,17,0.35)] transition duration-300 ease-in-out' value={nombreBuscador} onChange={(event) => cambiarNombreBuscador(event.target.value)} placeholder='Buscar por nombre'></input>
+    </>
+  )
   return (
     <>
       <svg className="absolute left-2 top-[0.7rem] fill-[#9e9ea7] w-[1.3rem] h-[1.3rem]" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
@@ -23,7 +28,6 @@ const Buscador = ({ nombreBuscador, cambiarNombreBuscador }: { nombreBuscador: s
     </>
   )
 };
-
 
 const Lista = () => {
 
@@ -116,13 +120,19 @@ const Lista = () => {
   }
 
   // Historial
-
   async function obtenerHistorial() {
 
     const responseHistorial = (await axios.delete("http://127.0.0.1:8000/obtenerHistorial")).data
 
     setHistorial(responseHistorial)
     setViendoHistorial(true)
+  }
+
+  async function recuperarPrestamo(index:number) {
+    const idPrestamo = historial[index]["_id"]
+    await axios.delete(`http://127.0.0.1:8000/recuperarPrestamo/${idPrestamo}`)
+    setConfirmarFinalizacionIsOpen(false)
+    obtenerHistorial()
   }
 
   const [historial,setHistorial] = useState([{"Nombre":"","_id":"","Dias restantes":Number,"Cobro":Number,"Detalles":"","Fecha limite":"","Dias para borrarse":Number}])
@@ -195,13 +205,9 @@ const Lista = () => {
                       </div>
                       <div className='w-[17%] flex items-center text-center box-border m-0 p-0 justify-center'>
                         <div className='w-[40%] flex flex-row gap-4 items-center text-center box-border m-0 p-0 justify-center'>
-                          <div onClick={() => handleActualizarPrestamo(index)}>
-                            <BotonConfiguracionPrestamo/>
+                          <div onClick={() => setConfirmarFinalizacionIsOpen(true)}>
+                            <BackIcon/>
                           </div>
-                          <div onClick={() => handleFinalizarPrestamo(index)}>
-                            <BotonFinalizarPrestamo/>
-                          </div>
-
                         </div>
                       </div>
                     </div>
@@ -216,9 +222,21 @@ const Lista = () => {
     )
   }
 
-  //States que manejan cuando se abre la ventana de configuración de prestamo
+  function textoBorrarORestaurar() {
+    if (viendoHistorial == true) {
+      return "¿Estas seguro de querer restaurar este prestamo?"
+    } else {
+      return "¿Estas seguro de querer finalizar este prestamo?"
+    }
+  }
 
-  const [indexConfigurarPrestamo,setIndexConfigurarPrestamo] = useState(0)
+  function handleBorrarORestaurar(index:number) {
+    if (viendoHistorial == false) {
+      borrarPrestamo(index)
+    } else {
+      recuperarPrestamo(index)
+    }
+  }
 
   //Ventana que se abre al apretar el ticket
 
@@ -231,10 +249,10 @@ const Lista = () => {
         <div id="fondoNegroVentanaFinalizar" className='absolute w-[100%] h-[100%] bg-black opacity-40'></div>
         <div id="FinalizarPrestamoDiv" className='bg-[#2c2c2c] shadow-2xl border-[#313131] p-4 border-2 w-[35rem] h-[11rem] rounded-2xl box-border absolute m-auto left-0 right-0 top-0 bottom-4' >
           <div className='flex flex-col justify-center items-center'>
-            <span className="flex flex-col h-[3.5rem] justify-center items-center mt-3 mb-1 text-base font-medium text-[white]">¿Estas seguro de querer finalizar este prestamo?</span>
+            <span className="flex flex-col h-[3.5rem] justify-center items-center mt-3 mb-1 text-base font-medium text-[white]">{textoBorrarORestaurar()}</span>
             <div className='flex flex-row justify-center items-center h-[4rem] gap-6'>
               <button className="w-[6.6rem] text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => setConfirmarFinalizacionIsOpen(false)}>Cancelar</button>
-              <button className="w-[6.6rem] text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => borrarPrestamo(index)}>Confirmar</button>
+              <button className="w-[6.6rem] text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => handleBorrarORestaurar(index)}>Confirmar</button>
             </div>
           </div>
         </div>
@@ -253,20 +271,15 @@ const Lista = () => {
     if (actualizandoPrestamo == false) {
       setVentanaNuevoPrestamoIsOpen(true)
     }
-    console.log(fechaLimiteOAcumulativoSelected)
     setvolverACalcularCobroState(false)
   }
-  useEffect(() => {
-    if (actualizandoPrestamo == false){
-      setVentanaNuevoPrestamoIsOpen(true)
-    }
-  },[actualizandoPrestamo])
 
   const BotonNuevoPrestamo = () => {
 
-    return (
+    if (viendoHistorial == false)  return (
       <button id='botonNuevoPrestamo' className='shadow-1 justify-center bg-[#406b2e] text-white inline-flex items-center border-0 rounded-lg box-border cursor-pointer font-sans font-semibold text-[1rem] leading-[1rem] w-[16rem] max-w-[480px] min-h-[40px] min-w-0 overflow-hidden px-0 pl-[10px] pr-[10px] ml-9 text-center touch-manipulation transition duration-[0.167s] ease-[cubic-bezier(0.4,0,0.2,1)] select-none -webkit-select-none align-middle mb-4 hover:bg-[#375a28] hover:text-white focus:bg-[#375a28] focus:text-white active:bg-[#2f4d22] active:text-[rgba(255,255,255,0.7)] disabled:cursor-not-allowed disabled:bg-[rgba(0,0,0,0.08)] disabled:text-[rgba(0,0,0,0.3)]' onClick={() => handleAbrirCrearNuevoPrestamo()}>Crear nuevo prestamo</button>
     )
+    return null;
   }
 
   //Logica necesaria para que el option funcione
@@ -673,7 +686,7 @@ const Lista = () => {
     <>
     <div id="divPrincipal" className='flex flex-col w-[80rem] duration-500 m-12'>
       <div className='flex flex-row relative ml-3'>
-        <Buscador nombreBuscador={nombreBuscador} cambiarNombreBuscador={cambiarNombreBuscador}/>
+        <Buscador viendoHistorial={viendoHistorial} nombreBuscador={nombreBuscador} cambiarNombreBuscador={cambiarNombreBuscador}/>
         <BotonNuevoPrestamo/>
       </div>
       <div id="probandoEncerrarDivLista" className='w-[73rem] shadow-interno bg-[#333333] rounded-1 h-[33rem]'>
