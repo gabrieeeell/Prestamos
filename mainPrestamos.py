@@ -16,6 +16,7 @@ app.add_middleware(
 
 """Orden"""
 #Cuando se aprete crear prestamo, que todos los states vuelvan como a su estado "orginal" osea sin nada
+#El boton de leer mas
 """Ideas"""
 #Un indicativo de cuantos dias faltan para que se acumule denuevo(?
 #Cuando un prestamo se pasa de su fecha de devolución, este cambie de color
@@ -124,24 +125,92 @@ async def obtenerDatos():
                                prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"]),
          "Detalles":prestamo["Detalles"],
          "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"]),# Convertir ObjectId a str
-         "Cobro incial":prestamo["Cobro inical"],
+         "Cobro inical":prestamo["Cobro inical"],
          "Tipo cobro":prestamo["Tipo cobro"],
          "Accion al pasar fecha":prestamo["Opción cobro final"],
          "Cada cuantos dias aumenta":prestamo["Cada cuantos dias aumenta"],
          "Acumulación fija":prestamo["Acumulación fija"],
-         "Acumulación porcentual":prestamo["Acumulación porcentual"]}  
+         "Acumulación porcentual":prestamo["Acumulación porcentual"],
+         "Cobro final":prestamo["Cobro final"]}  
         for prestamo in dbClient.local.prestamos.find()
     ]
     return todosLosPrestamos
 
 @app.delete("/borrarPrestamo/{id}")
 async def borrarPrestamo(id : str):
+    dbClient.local.historial.insert_one(dbClient.local.prestamos.find_one({"_id": ObjectId(id)}))
+    dbClient.local.historial.find_one_and_update({"_id": ObjectId(id)},{'$set':{'Fecha eliminación':str(fechaActual)}})
     dbClient.local.prestamos.find_one_and_delete({"_id": ObjectId(id)})
-    return "bien"
+    return None
 
-@app.put("/actualizarPrestamo/{id}/{nombre}")
-async def actualizarPrestamos(id : str, nombre : str):
-    dbClient.local.prestamos.find_one_and_update({"_id": ObjectId(id)},
-                                                 { '$set': { "Nombre" : nombre} })
+@app.put(
+        "/actualizarPrestamo/{id}/{nombre}/{tipoCobro}/{fechaLimite}/{diasParaDevolucion}/{cobroFinal}/{opcionCobroFinal}/{cobroInicial}/{cadaCuantosDias}/{acumulacionFija}/{acumulacionPorcentual}/{detalles}")
+async def actualizarPrestamos(id : str, nombre : str,tipoCobro : str,cobroFinal:int , detalles : str, fechaLimite: str,diasParaDevolucion:int,opcionCobroFinal:str, cobroInicial:int,
+                              cadaCuantosDias:int,acumulacionFija : int, acumulacionPorcentual : int):
+
+    fechaLimite = str((datetime.strptime(fechaLimite, "%d-%m-%Y") + timedelta(days=diasParaDevolucion)).date())
+    #ChatGPT MVP
+    dbClient.local.prestamos.find_one_and_update({"_id": ObjectId(id)},{ 
+                                                    '$set': { "Nombre" : nombre,
+                                                             "Tipo cobro":tipoCobro,
+                                                             "Fecha limite":fechaLimite,
+                                                             "Cobro final":cobroFinal,
+                                                             "Opción cobro final":opcionCobroFinal,
+                                                             "Cobro inical":cobroInicial,
+                                                             "Cada cuantos dias aumenta":cadaCuantosDias,
+                                                             "Acumulación fija":acumulacionFija,
+                                                             "Acumulación porcentual":acumulacionPorcentual,
+                                                             "Fecha inical":fechaLimite,
+                                                             "Detalles":detalles},
+                                                     })
+    return None
+                                                            #Solo puede seleccionar fechas futuras
+@app.put(
+    "/actualizarPrestamoParcialmente/{id}/{nombre}/{tipoCobro}/{fechaLimite}/{diasParaDevolucion}/{cobroActual}/{opcionCobroFinal}/{cadaCuantosDias}/{acumulacionFija}/{acumulacionPorcentual}/{detalles}")
+async def actualizarPrestamosParcialmente(id : str, nombre : str,tipoCobro : str,cobroActual:int , detalles : str, fechaLimite: str,diasParaDevolucion:int,opcionCobroFinal:str,
+                              cadaCuantosDias:int,acumulacionFija : int, acumulacionPorcentual : int):
     
-    return ""
+    fechaLimite = str((datetime.strptime(fechaLimite, "%d-%m-%Y") + timedelta(days=diasParaDevolucion)).date())
+
+    dbClient.local.prestamos.find_one_and_update({"_id": ObjectId(id)},{ 
+                                                    '$set': { "Nombre" : nombre,
+                                                             "Tipo cobro":tipoCobro,
+                                                             "Fecha limite":fechaLimite,
+                                                             "Cobro final":cobroActual,
+                                                             "Opción cobro final":opcionCobroFinal,
+                                                             "Cobro inical":cobroActual,
+                                                             "Cada cuantos dias aumenta":cadaCuantosDias,
+                                                             "Acumulación fija":acumulacionFija,
+                                                             "Acumulación porcentual":acumulacionPorcentual,
+                                                             "Fecha inical":str(fechaActual),
+                                                             "Detalles":detalles},
+                                                     })
+    return None
+
+@app.delete("/obtenerHistorial")                                                   #Que un @get borre datos, es una mala practica
+async def obtenerHistorial():
+    prestamosDelHistorial = [
+        {"Fecha eliminación":prestamo["Fecha eliminación"],
+         "_id":prestamo["_id"]}
+         for prestamo in dbClient.local.historial.find()
+    ]
+    for prestamo in prestamosDelHistorial:
+        
+        if int(datetimeToDias(prestamo["Fecha eliminación"])) < -14:
+            dbClient.local.historial.find_one_and_delete({"_id":ObjectId(prestamo["_id"])})
+        else:
+            dbClient.local.historial.find_one_and_update({"_id":ObjectId(prestamo["_id"])},{
+                "$set":{"Dias para borrarse":14 - abs(int(datetimeToDias(prestamo["Fecha eliminación"])))}})
+        todosLosPrestamos = [
+        {"Nombre":prestamo["Nombre"], 
+         "_id": str(prestamo["_id"]),
+         "Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
+         "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
+                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"]),
+         "Detalles":prestamo["Detalles"],
+         "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"]),# Convertir ObjectId a str
+         "Dias para borrarse":prestamo["Dias para borrarse"]}  
+        for prestamo in dbClient.local.historial.find()]
+
+        return todosLosPrestamos
+    
