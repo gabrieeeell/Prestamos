@@ -3,8 +3,6 @@ from datetime import datetime, timedelta
 from db.client import dbClient
 from bson import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
-import motor.motor_asyncio
-import asyncio
 
 app = FastAPI()
 
@@ -101,6 +99,24 @@ def calcularCobro(tipoCobro,opcionCobroFinal,cobroFinal,cadaCuantosDiasAumenta,f
 
 #nombre.replace(" ","%20") vo sai si lo necesitai usar
 
+def ordenarPrestamos(prestamos, tipoOrden):
+    if tipoOrden == "Fecha de creación o actualización":
+        return prestamos
+    elif tipoOrden == "Cobro":   #ChatGPT MVP
+        return sorted(prestamos, key=lambda x: x["Cobro"], reverse=True)
+    elif tipoOrden == "Fecha de cobro":
+        print("Almenos pasa por aqui")
+        prestamosOrdenados = []
+        i = 0
+        while i < len(prestamos):
+            if prestamos[i]["Tipo cobro"] == "Acumulativo":
+                prestamosOrdenados.append(prestamos[i])
+                del prestamos[i]
+            else:
+                i += 1
+        return prestamosOrdenados + sorted(prestamos,key=lambda x: datetimeToDias(x["Fecha limite"]))
+        
+
 @app.post("/insertarMonto/{nombrePrestamo}/{tipoCobro}/{fechaLimitePrestamo}/{diasParaDevolucion}/{cobroFinal}/{opcionCobroFinal}/{cobroInicial}/{cadaCuantosDiasAumenta}/{acumulacionFija}/{acumulacionPorcentual}/{detallesNuevoPrestamo}")
 async def insertarMonto(                               
     nombrePrestamo: str = None, tipoCobro : str = None, fechaLimitePrestamo : str = None, diasParaDevolucion : int = None, cobroFinal: int = None,
@@ -118,8 +134,8 @@ async def insertarMonto(
 
     return nombrePrestamo, fechaLimitePrestamo
 
-@app.get("/obtenerPrestamos")
-async def obtenerDatos():
+@app.get("/obtenerPrestamos/{ordenarPor}")
+async def obtenerDatos(ordenarPor : str):
     # Convertir ObjectId a str para cada documento
     todosLosPrestamos = [
         {"Nombre":prestamo["Nombre"], 
@@ -140,6 +156,9 @@ async def obtenerDatos():
                                prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])[1]}  
         for prestamo in dbClient.local.prestamos.find()
     ]
+
+    todosLosPrestamos = ordenarPrestamos(todosLosPrestamos,ordenarPor)
+
     return todosLosPrestamos
 
 @app.delete("/borrarPrestamo/{id}")

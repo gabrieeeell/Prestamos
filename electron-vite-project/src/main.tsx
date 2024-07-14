@@ -10,7 +10,7 @@ import BarsIcon from './assets/bars';
 import GearIcon from './assets/gear';
 import CheckIcon from './assets/check';
 import HistoryIcon from './assets/history';
-import {colorStyles} from './styles/select.tsx'
+import {colorStyles , ordenarPorStyles} from './styles/select.tsx'
 import BackIcon from './assets/back.tsx';
 import PrestamoIcon from './assets/prestamoIcon.tsx';
 
@@ -152,11 +152,13 @@ const Lista = () => {
 
   const [prestamos, cambiarPrestamos] = useState([{"_id":"","Nombre":"","Dias restantes":7777,"Cobro":Number,"Detalles":"","Fecha limite":"","Cobro inical":Number,"Tipo cobro":"","Accion al pasar fecha":"","Cada cuantos dias aumenta":Number,"Acumulación fija":Number,"Acumulación porcentual":Number,"Cobro final":Number,"Dias para aumento":""}]);
   
+  const [ordenarPor,setOrdenarPor] = useState("Fecha de creación o actualización")
+
   // Solicitudes
 
   async function obtenerPrestamos () {
 
-    const responsePrestamos = (await axios.get("http://127.0.0.1:8000/obtenerPrestamos")).data
+    const responsePrestamos = (await axios.get(`http://127.0.0.1:8000/obtenerPrestamos/${ordenarPor}`)).data
   
     cambiarPrestamos(responsePrestamos)
 
@@ -561,7 +563,7 @@ const Lista = () => {
               <input  defaultValue={nombreNuevoPrestamo} onBlur={(e) => setNombreNuevoPrestamo(e.target.value)} type="text" id="inputNombre" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="Nombre..." required />
             </div>
               <label htmlFor="selectTipoPrestamo" className="mt-3 mb-1 block text-sm font-medium text-[white]">Tipo de cobro:</label>                         
-              <Select className='mb-[0.35rem]' id="selectTipoPrestamo" options={opcionesFechaOAcumulativo} styles={colorStyles} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
+              <Select isSearchable={false} className='mb-[0.35rem]' id="selectTipoPrestamo" options={opcionesFechaOAcumulativo} styles={colorStyles} onChange={selectFechaLimiteOAcumulativo} defaultValue={{label:fechaLimiteOAcumulativoSelected,value:fechaLimiteOAcumulativoSelected}}/>
             </div>
             <div className='flex flex-col w-[50%] justify-center'>
               <label htmlFor='detallesInput' className="block mt-2 mb-1 text-sm font-medium text-[white]">Detalles:</label>
@@ -635,6 +637,12 @@ const Lista = () => {
     {label:"Aumentar cobro",value:"Aumentar cobro"}
   ]
 
+  const opcionesOrdenarPor = [
+    {label:"Fecha de creación o actualización", value:"Fecha de creación o actualización"},
+    {label:"Cobro", value:"Cobro"},
+    {label:"Fecha de cobro", value:"Fecha de cobro"}
+  ]
+
   const selectFijoOAumentar = (event:SingleValue<{label:string;value:string}>,) => {
 
     if (event.value == "Dejar cobro fijo") {
@@ -648,6 +656,15 @@ const Lista = () => {
     }
 
   }
+
+  function handleCambiarOrden(event:SingleValue<{label:string;value:string}>,){
+    if (event) {setOrdenarPor(event.value)}
+    return null
+  }
+
+  useEffect(() => {
+    obtenerPrestamos()
+  },[ordenarPor])
 
   const [volverACalcularCobroState,setvolverACalcularCobroState] = useState(false)
 
@@ -685,7 +702,7 @@ const Lista = () => {
             <CobroElemento/>
             <div className='flex flex-col w-[50%]'>
               <label htmlFor='selectOpcionAlPasarse' className="block mb-1 text-sm font-medium text-[white]">Acción al pasarse la fecha:</label>
-              <Select id='selectOpcionAlPasarse' options={opcionesFijoOAumentar} onChange={(event) => selectFijoOAumentar(event)} styles={colorStyles} defaultValue={{label:aumentarCobroIsOpen,value:aumentarCobroIsOpen}}/>
+              <Select isSearchable={false} id='selectOpcionAlPasarse' options={opcionesFijoOAumentar} onChange={(event) => selectFijoOAumentar(event)} styles={colorStyles} defaultValue={{label:aumentarCobroIsOpen,value:aumentarCobroIsOpen}}/>
             </div>
           </div>
           <DivAumentoCobro aumentarCobroIsOpen = {aumentarCobroIsOpen}/>
@@ -775,6 +792,10 @@ const Lista = () => {
       </div>
       <div id="probandoEncerrarDivLista" className={`w-[73rem] shadow-interno bg-[#333333] rounded-1 h-[33rem] ${viendoHistorial ? "my-4" : "my-0"} }`}>
         <div id="divLista" className='w-11/12 overflow-y-auto bg-transparent rounded-1 h-[33rem]'> {/*Después subir por que eran 33 rem*/}
+          <div className='ml-5 flex w-[30rem] flex-row h-[10%] items-center'>
+              <label htmlFor='selectOrden' className='font-semibold text-[#bebebe]'>Ordenar por:</label>
+              <Select isSearchable={false} id="selectOrden" options={opcionesOrdenarPor} onChange={(event) => handleCambiarOrden(event)} styles={ordenarPorStyles} defaultValue={{label:ordenarPor,value:ordenarPor}}/>
+          </div>
           <ListaOHistorial/>
         </div>
       </div>
