@@ -74,7 +74,7 @@ def calcularCobro(tipoCobro,opcionCobroFinal,cobroFinal,cadaCuantosDiasAumenta,f
     diasPasados = abs( int( str(datetime.strptime(fechaInicial, "%Y-%m-%d").date() - datetime.now().date())[:-13] ) ) if datetime.strptime(fechaInicial, "%Y-%m-%d").date() != datetime.now().date() else 0
 
     if (tipoCobro == "Fecha limite" and opcionCobroFinal == "Dejar cobro fijo") or (tipoCobro == "Fecha limite" and int(datetimeToDias(fechaLimite)) >= 0 ):
-        return int(cobroFinal)
+        return [int(cobroFinal),""]
     
     elif tipoCobro == "Acumulativo" and cadaCuantosDiasAumenta != 0:
         for i in range(int(diasPasados/cadaCuantosDiasAumenta)):
@@ -82,17 +82,19 @@ def calcularCobro(tipoCobro,opcionCobroFinal,cobroFinal,cadaCuantosDiasAumenta,f
             cobroInicial *= acumulacionPorcentual/100 + 1
 
             cobroInicial += acumulacionFija
-
-        return int(cobroInicial)
+        diasOdia = "días" if (cadaCuantosDiasAumenta - int(diasPasados%cadaCuantosDiasAumenta)) > 1 else "día"
+        return [int(cobroInicial),f"El cobro aumentara en {str(cadaCuantosDiasAumenta - int(diasPasados%cadaCuantosDiasAumenta))} {diasOdia}"]
     
-    elif tipoCobro == "Fecha limite" and opcionCobroFinal == "Aumentar cobro" and int(str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual)[:-13]) < 0:
-        for i in range(int(diasPasados/cadaCuantosDiasAumenta) + 1):
+    elif tipoCobro == "Fecha limite" and opcionCobroFinal == "Aumentar cobro" and int(str(datetime.strptime(fechaLimite, "%Y-%m-%d").date() - fechaActual)[:-13]) < 0:  # <-- Este codigo de aca puede dar error
+        for i in range(int(diasPasados/cadaCuantosDiasAumenta)):                                                                                                    # testealo
 
             cobroFinal *= acumulacionPorcentual/100 + 1
 
             cobroFinal += acumulacionFija
 
-        return int(cobroFinal)
+        diasOdia = "días" if (cadaCuantosDiasAumenta - int(diasPasados%cadaCuantosDiasAumenta)) > 1 else "día"
+
+        return [int(cobroFinal), f"El cobro aumentara en {str(cadaCuantosDiasAumenta - int(diasPasados%cadaCuantosDiasAumenta))} {diasOdia}"]
 
     else:
         return "algo esta mal"
@@ -124,7 +126,7 @@ async def obtenerDatos():
          "_id": str(prestamo["_id"]),
          "Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
          "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
-                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"]),
+                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])[0],
          "Detalles":prestamo["Detalles"],
          "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"]),# Convertir ObjectId a str
          "Cobro inical":prestamo["Cobro inical"],
@@ -133,7 +135,9 @@ async def obtenerDatos():
          "Cada cuantos dias aumenta":prestamo["Cada cuantos dias aumenta"],
          "Acumulación fija":prestamo["Acumulación fija"],
          "Acumulación porcentual":prestamo["Acumulación porcentual"],
-         "Cobro final":prestamo["Cobro final"]}  
+         "Cobro final":prestamo["Cobro final"],
+         "Dias para aumento": calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
+                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])[1]}  
         for prestamo in dbClient.local.prestamos.find()
     ]
     return todosLosPrestamos
@@ -208,7 +212,7 @@ async def obtenerHistorial():
          "_id": str(prestamo["_id"]),
          "Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
          "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
-                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"]),
+                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])[0],
          "Detalles":prestamo["Detalles"],
          "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"]),# Convertir ObjectId a str
          "Dias para borrarse":prestamo["Dias para borrarse"]}  

@@ -12,6 +12,62 @@ import CheckIcon from './assets/check';
 import HistoryIcon from './assets/history';
 import {colorStyles} from './styles/select.tsx'
 import BackIcon from './assets/back.tsx';
+import PrestamoIcon from './assets/prestamoIcon.tsx';
+
+const BotonNuevoPrestamo = ({viendoHistorial, handleAbrirCrearNuevoPrestamo} : {viendoHistorial : any, handleAbrirCrearNuevoPrestamo : any}) => {
+
+  if (viendoHistorial == false)  return (
+    <button id='botonNuevoPrestamo' className='shadow-1 justify-center bg-[#406b2e] text-white inline-flex items-center border-0 rounded-lg box-border cursor-pointer font-sans font-semibold text-[1rem] leading-[1rem] w-[16rem] max-w-[480px] min-h-[40px] min-w-0 overflow-hidden px-0 pl-[10px] pr-[10px] ml-9 text-center touch-manipulation transition duration-[0.167s] ease-[cubic-bezier(0.4,0,0.2,1)] select-none -webkit-select-none align-middle mb-4 hover:bg-[#375a28] hover:text-white focus:bg-[#375a28] focus:text-white active:bg-[#2f4d22] active:text-[rgba(255,255,255,0.7)] disabled:cursor-not-allowed disabled:bg-[rgba(0,0,0,0.08)] disabled:text-[rgba(0,0,0,0.3)]' onClick={() => handleAbrirCrearNuevoPrestamo()}>Crear nuevo prestamo</button>
+  )
+  return null;
+}
+
+  //Boton 3 rayas  tres Tres boton Rayas
+
+  const MenuBoton3Rayas = ({obtenerHistorial, obtenerPrestamos}:{obtenerHistorial:any, obtenerPrestamos:any}) => {
+
+    const [menuIsAbierto,setMenuIsAbierto] = useState(false)
+
+    const handleMenuIsAbierto = () => {
+      if (menuIsAbierto == true) {
+        setMenuIsAbierto(false)
+      } else {
+        setMenuIsAbierto(true)
+      }
+    }
+  
+    useEffect(() => {
+      const menuDiv = document.getElementById("menu3Rayas");
+      if (menuIsAbierto == true) {
+        menuDiv.classList.remove('translate-x-[7.5rem]')
+      } else {
+        menuDiv.classList.add('translate-x-[7.5rem]')
+      }
+    }, [menuIsAbierto])
+  
+
+    return (
+      <div className=''>
+        <div  id='menu3Rayas' className="bg-oscuro flex-col ease-linear shadow-1 w-[10rem] absolute translate-x-[7.5rem] duration-300 h-full right-0 flex">
+          <button onClick={handleMenuIsAbierto} id='boton3Rayas' className='justify-center items-center bg-oscuro rounded-[1.5rem] border-0 w-[2.5rem] h-[2.5rem] cursor-pointer flex list-none mt-[0.3rem] text-center transition-all duration-200 align-baseline whitespace-nowrap select-none -webkit-select-none touch-manipulation hover:bg-[#474747]'> 
+            <BarsIcon/>
+          </button>
+          <div onClick={() => obtenerPrestamos()} className='hover:bg-[#424242] duration-200 h-[2.5rem] w-full flex flex-row cursor-pointer'>
+            <div className=' flex justify-center items-center w-[2.5rem]'>
+              <PrestamoIcon/>
+            </div>
+            <div className='flex justify-center items-center h-full w-[70%] text-xs font-medium text-white'>Prestamos</div>
+          </div>
+          <div onClick={() => obtenerHistorial()} className='hover:bg-[#424242] duration-200 h-[2.5rem] w-full flex flex-row cursor-pointer'>
+            <div className=' flex justify-center items-center w-[2.5rem]'>
+              <HistoryIcon/>
+            </div>
+            <div className='flex justify-center items-center h-full w-[70%] text-xs font-medium text-white'>Historial prestamos</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
 const Buscador = ({viendoHistorial,nombreBuscador, cambiarNombreBuscador }: {viendoHistorial:boolean ,nombreBuscador: string, cambiarNombreBuscador: (value: string) => void }) => {
 
@@ -94,7 +150,7 @@ const Lista = () => {
 
   // State que se usara para guardar los prestamos
 
-  const [prestamos, cambiarPrestamos] = useState([{"_id":"","Nombre":"","Dias restantes":7777,"Cobro":Number,"Detalles":"","Fecha limite":"","Cobro inical":Number,"Tipo cobro":"","Accion al pasar fecha":"","Cada cuantos dias aumenta":Number,"Acumulación fija":Number,"Acumulación porcentual":Number,"Cobro final":Number}]);
+  const [prestamos, cambiarPrestamos] = useState([{"_id":"","Nombre":"","Dias restantes":7777,"Cobro":Number,"Detalles":"","Fecha limite":"","Cobro inical":Number,"Tipo cobro":"","Accion al pasar fecha":"","Cada cuantos dias aumenta":Number,"Acumulación fija":Number,"Acumulación porcentual":Number,"Cobro final":Number,"Dias para aumento":""}]);
   
   // Solicitudes
 
@@ -103,6 +159,8 @@ const Lista = () => {
     const responsePrestamos = (await axios.get("http://127.0.0.1:8000/obtenerPrestamos")).data
   
     cambiarPrestamos(responsePrestamos)
+
+    setViendoHistorial(false)
 
     return {}
   
@@ -139,25 +197,62 @@ const Lista = () => {
 
   const [viendoHistorial,setViendoHistorial] = useState(false)
 
+  const LeerMas = ({detalles} : {detalles : any}) => {
+    if (detalles.length > 103) {
+      return (
+        <div onClick={() => handleOpenLeerMas(detalles)} className='font-medium cursor-pointer hover:underline'>
+          Leer mas...
+        </div>
+      )
+    } else return null;
+  }
+
+  const [leerMasIsOpen,setLeerMasIsOpen] = useState(false)
+
+  const [detallesLeerMas,setDetallesLeerMas] = useState("")
+
+  function handleOpenLeerMas(detalles : any) {
+    setDetallesLeerMas(detalles)
+    setLeerMasIsOpen(true)
+  }
+
+  const VentanaLeerMas = () => {
+    if (leerMasIsOpen == true) return (
+      <>
+        <div className='z-10 absolute w-[100%] h-[100%] bg-black opacity-50' onClick={() => setLeerMasIsOpen(false)}></div>
+        <div className='absolute inset-x-0 top-0 bottom-0 flex justify-center items-center'>
+          <div
+            className='z-20 bg-[#3E3F40] border-[#313131] box-border p-4 text-[#969696] font-normal text-sm rounded-3xl w-[33rem] m-auto'>
+            {detallesLeerMas}
+          </div>
+        </div>
+      </>
+    )
+  }
+
   const ListaOHistorial = () => {
+    const hList = "h-[8.1rem]"
     if (viendoHistorial == false) return(
       <ul className='w-full'>
             
             {prestamos.map((prestamo, index) => {
               if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
                 return (
-                  <div className=" w-[100%] h-28 flex-row items-center justify-center flex" key={index}>
+                  <div className={`w-[100%] ${hList} flex-row items-center justify-center flex`} key={index}>
                     <div className='border border-2 w-[97%] h-[95%] border-[#313131] rounded-3xl bg-opacity-[10%] bg-gray-400 flex flex-row'>
                       <div className='flex flex-col overflow-hidden w-[28%]'>
                         <div className='h-[70%] w-[95%] overflow-hidden flex items-end ml-8 text-[#d3d3d3] font-medium'>{prestamo["Nombre"]}</div>
                         <div className='h-[30%] w-[95%] mb-8 flex items-center ml-8 text-[#969696] font-normal text-sm'>Fecha: {prestamo["Fecha limite"]}</div>
                       </div>
                       <div className='w-[20%] flex items-center box-border m-0 p-0 justify-center text-[#969696] font-normal text-sm'>
-                        En x dias aumenta el cobro
+                        {prestamo["Dias para aumento"]}
                       </div>
-                      <div className='w-[20%] my-2.5 flex ml-6 items-center text-center box-border m-0 p-0 justify-center text-[#969696] font-normal text-sm'>
-                        {prestamo["Detalles"]}
-                      </div>
+                        <div className={`w-[20%] flex-col my-2.5 flex ml-6 ${prestamo["Detalles"].length > 103 ? "items-start" : "items-center"} box-border p-0 justify-center text-[#969696] font-normal text-sm`}>
+                          <span className={`line-clamp-4 overflow-hidden text-ellipsis ${prestamo["Detalles"].length > 103 ? "text-left" : "text-center"} break-all `}>
+                            {prestamo["Detalles"]}
+                          </span>
+                          <LeerMas detalles={prestamo["Detalles"]}/>
+                        </div>
                       <div className='w-[15%] flex items-center text-center box-border m-0 p-0 justify-center text-[#d3d3d3] font-medium'>
                         ${JSON.stringify(prestamo["Cobro"])}
                       </div>
@@ -188,22 +283,25 @@ const Lista = () => {
             {historial.map((prestamo, index) => {
               if (prestamo["Nombre"].toLowerCase().includes(nombreBuscador.toLowerCase())) {
                 return (
-                  <div className=" w-[100%] h-28 flex-row items-center justify-center flex" key={index}>
+                  <div className={`w-[100%] ${hList} flex-row items-center justify-center flex`} key={index}>
                     <div className='border border-2 w-[97%] h-[95%] border-[#313131] rounded-3xl bg-opacity-[10%] bg-gray-400 flex flex-row'>
                       <div className='flex flex-col overflow-hidden w-[28%]'>
                         <div className='h-[70%] w-[95%] overflow-hidden flex items-end ml-8 text-[#d3d3d3] font-medium'>{prestamo["Nombre"]}</div>
                         <div className='h-[30%] w-[95%] mb-8 flex items-center ml-8 text-[#969696] font-normal text-sm'>Fecha: {prestamo["Fecha limite"]}</div>
                       </div>
-                      <div className='w-[20%] flex items-center box-border m-0 p-0 justify-center text-[#969696] font-normal text-sm'>
-                        En x dias aumenta el cobro
+                      <div className='w-[24%] flex items-center box-border m-0 p-0 justify-center text-[#969696] font-normal text-sm'>
+                        En {JSON.stringify(prestamo["Dias para borrarse"])} días se elimina el prestamo
                       </div>
-                      <div className='w-[20%] my-2.5 flex ml-6 items-center text-center box-border m-0 p-0 justify-center text-[#969696] font-normal text-sm'>
-                        {prestamo["Detalles"]}
-                      </div>
-                      <div className='w-[15%] flex items-center text-center box-border m-0 p-0 justify-center text-[#d3d3d3] font-medium'>
+                        <div className={`w-[20%] flex-col my-2.5 flex ml-6 ${prestamo["Detalles"].length > 103 ? "items-start" : "items-center"} box-border p-0 justify-center text-[#969696] font-normal text-sm`}>
+                          <span className={`line-clamp-4 overflow-hidden text-ellipsis ${prestamo["Detalles"].length > 103 ? "text-left" : "text-center"} break-all `}>
+                            {prestamo["Detalles"]}
+                          </span>
+                          <LeerMas detalles={prestamo["Detalles"]}/>
+                        </div>
+                      <div className='w-[16%] flex items-center text-center box-border m-0 p-0 justify-center text-[#d3d3d3] font-medium'>
                         ${JSON.stringify(prestamo["Cobro"])}
                       </div>
-                      <div className='w-[17%] flex items-center text-center box-border m-0 p-0 justify-center'>
+                      <div className='w-[12%] flex items-center text-center box-border m-0 p-0 justify-center'>
                         <div className='w-[40%] flex flex-row gap-4 items-center text-center box-border m-0 p-0 justify-center'>
                           <div onClick={() => setConfirmarFinalizacionIsOpen(true)}>
                             <BackIcon/>
@@ -246,7 +344,7 @@ const Lista = () => {
   
     return (
       <>
-        <div id="fondoNegroVentanaFinalizar" className='absolute w-[100%] h-[100%] bg-black opacity-40'></div>
+        <div id="fondoNegroVentanaFinalizar" onClick={() => setConfirmarFinalizacionIsOpen(false)} className='absolute w-[100%] h-[100%] bg-black opacity-40'></div>
         <div id="FinalizarPrestamoDiv" className='bg-[#2c2c2c] shadow-2xl border-[#313131] p-4 border-2 w-[35rem] h-[11rem] rounded-2xl box-border absolute m-auto left-0 right-0 top-0 bottom-4' >
           <div className='flex flex-col justify-center items-center'>
             <span className="flex flex-col h-[3.5rem] justify-center items-center mt-3 mb-1 text-base font-medium text-[white]">{textoBorrarORestaurar()}</span>
@@ -272,14 +370,6 @@ const Lista = () => {
       setVentanaNuevoPrestamoIsOpen(true)
     }
     setvolverACalcularCobroState(false)
-  }
-
-  const BotonNuevoPrestamo = () => {
-
-    if (viendoHistorial == false)  return (
-      <button id='botonNuevoPrestamo' className='shadow-1 justify-center bg-[#406b2e] text-white inline-flex items-center border-0 rounded-lg box-border cursor-pointer font-sans font-semibold text-[1rem] leading-[1rem] w-[16rem] max-w-[480px] min-h-[40px] min-w-0 overflow-hidden px-0 pl-[10px] pr-[10px] ml-9 text-center touch-manipulation transition duration-[0.167s] ease-[cubic-bezier(0.4,0,0.2,1)] select-none -webkit-select-none align-middle mb-4 hover:bg-[#375a28] hover:text-white focus:bg-[#375a28] focus:text-white active:bg-[#2f4d22] active:text-[rgba(255,255,255,0.7)] disabled:cursor-not-allowed disabled:bg-[rgba(0,0,0,0.08)] disabled:text-[rgba(0,0,0,0.3)]' onClick={() => handleAbrirCrearNuevoPrestamo()}>Crear nuevo prestamo</button>
-    )
-    return null;
   }
 
   //Logica necesaria para que el option funcione
@@ -309,48 +399,6 @@ const Lista = () => {
   // useState para guardar los detalles
 
   const [detallesNuevoPrestamo,setdetallesNuevoPrestamo] = useState("")
-
-  //Boton 3 rayas  tres Tres boton Rayas
-
-
-  const MenuBoton3Rayas = () => {
-
-    const [menuIsAbierto,setMenuIsAbierto] = useState(false)
-
-    const handleMenuIsAbierto = () => {
-      if (menuIsAbierto == true) {
-        setMenuIsAbierto(false)
-      } else {
-        setMenuIsAbierto(true)
-      }
-    }
-  
-    useEffect(() => {
-      const menuDiv = document.getElementById("menu3Rayas");
-      if (menuIsAbierto == true) {
-        menuDiv.classList.remove('translate-x-[7.5rem]')
-      } else {
-        menuDiv.classList.add('translate-x-[7.5rem]')
-      }
-    }, [menuIsAbierto])
-  
-
-    return (
-      <div className=''>
-        <div  id='menu3Rayas' className="bg-oscuro flex-col ease-linear shadow-1 w-[10rem] absolute translate-x-[7.5rem] duration-300 h-full right-0 flex">
-          <button onClick={handleMenuIsAbierto} id='boton3Rayas' className='justify-center items-center bg-oscuro rounded-[1.5rem] border-0 w-[2.5rem] h-[2.5rem] cursor-pointer flex list-none mt-[0.3rem] text-center transition-all duration-200 align-baseline whitespace-nowrap select-none -webkit-select-none touch-manipulation hover:bg-[#474747]'> 
-            <BarsIcon/>
-          </button>
-          <div onClick={() => obtenerHistorial()} className='hover:bg-[#424242] duration-200 h-[2.5rem] w-full flex flex-row cursor-pointer'>
-            <div className=' flex justify-center items-center w-[2.5rem]'>
-              <HistoryIcon/>
-            </div>
-            <div className='flex justify-center items-center h-full w-[70%] text-xs font-medium text-white'>Historial prestamos</div>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   const BotonConfiguracionPrestamo = () => {
     return (
@@ -385,7 +433,6 @@ const Lista = () => {
     fechaAntigua:string,   //Esta es la que se selecciona cuando se tiene activado volver a calcular prestamo
 
   ) {
-    console.log(cobroInicial)
     if (detallesNuevoPrestamo == "") {
       detallesNuevoPrestamo = "-"
     }
@@ -463,6 +510,40 @@ const Lista = () => {
   //Ventana Nuevo Prestamo
 
   const VentanaNuevoPrestamo = ({isOpen = false}) => {
+    
+    function handleCrear(    nombrePrestamo:string,
+      tipoCobro:string,
+      fechaLimitePrestamo:string,
+      diasParaDevolucion:number,
+      cobroFinal:number,
+      opcionCobroFinal:string,
+      cobroInicial:number,
+      cadaCuantosDiasAumenta:number,
+      acumulacionFija:number,
+      acumulacionPorcentual:number,
+      detallesNuevoPrestamo:string,
+      fechaAntigua:string,){
+        handleCrearOActualizar(nombrePrestamo,tipoCobro,fechaLimitePrestamo,diasParaDevolucion,cobroFinal,opcionCobroFinal,cobroInicial,cadaCuantosDiasAumenta,acumulacionFija,acumulacionPorcentual,detallesNuevoPrestamo,fechaAntigua)
+        nombreObligatorio()
+      }
+
+    function nombreObligatorio(){
+      if (nombreNuevoPrestamo == "") {
+        setNombreObligatorioVisible(true)
+        setTimeout(() => {
+          setNombreObligatorioVisible(false);
+        }, 2000);
+      }
+    }
+    
+    function handleCancelarPrestamo() {
+      setVentanaNuevoPrestamoIsOpen(false)
+      if (actualizandoPrestamo == true) {
+        setNombreNuevoPrestamo("");setdetallesNuevoPrestamo("");setCobro(0);setFechaLimiteOAcumulativoSelected("Fecha limite");setFechaNuevoPrestamoDate(new Date());setDiasParaLaDevolucion(0);setCadaCuantosDias(1);setAumentoFijo(0);setAumentoPorcentual(0);setCobroInicial(0)
+      }
+    }
+
+    const [isNombreObligatorioVisible,setNombreObligatorioVisible] = useState(false)
 
     if (!isOpen) return null;
 
@@ -473,7 +554,10 @@ const Lista = () => {
           <div className='flex flex-row w-[100%]'>
             <div className='flex flex-col w-[50%] justify-center'>
             <div>
-              <label htmlFor='inputNombre' className="block mt-2 mb-1 text-sm font-medium text-[white]">Nombre:</label>
+              <div className='flex flex-row items-center'>
+                <label htmlFor='inputNombre' className="block mt-2 mb-1 text-sm font-medium text-[white]">Nombre:</label>
+                <span className={`text-[#969696] font-normal text-sm ml-4 mt-2 mb-1 transition-opacity duration-300 ${isNombreObligatorioVisible ? 'opacity-100' : 'opacity-0'}`}>*Campo obligatorio*</span>
+              </div>
               <input  defaultValue={nombreNuevoPrestamo} onBlur={(e) => setNombreNuevoPrestamo(e.target.value)} type="text" id="inputNombre" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="Nombre..." required />
             </div>
               <label htmlFor="selectTipoPrestamo" className="mt-3 mb-1 block text-sm font-medium text-[white]">Tipo de cobro:</label>                         
@@ -492,9 +576,9 @@ const Lista = () => {
 
           <div className='absolute flex flex-row justify-center ml-[33%] items-center gap-4 mr-5 bottom-0'>
             <div className="divBotonCrearNuevoPrestamo">
-              <button className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => handleCrearOActualizar(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamoString,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual,detallesNuevoPrestamo,fechaAntiguaString)}>{textoBotonCrearOActualizar()}</button>
+              <button className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => handleCrear(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamoString,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual,detallesNuevoPrestamo,fechaAntiguaString)}>{textoBotonCrearOActualizar()}</button>
             </div>        
-              <button onClick={() => setVentanaNuevoPrestamoIsOpen(false)} id="botonCancelarNuevoPrestamo" type="button" className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2">Cancelar</button>
+              <button onClick={() => handleCancelarPrestamo()} id="botonCancelarNuevoPrestamo" type="button" className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2">Cancelar</button>
             </div>
           </div>
       </>
@@ -687,17 +771,18 @@ const Lista = () => {
     <div id="divPrincipal" className='flex flex-col w-[80rem] duration-500 m-12'>
       <div className='flex flex-row relative ml-3'>
         <Buscador viendoHistorial={viendoHistorial} nombreBuscador={nombreBuscador} cambiarNombreBuscador={cambiarNombreBuscador}/>
-        <BotonNuevoPrestamo/>
+        <BotonNuevoPrestamo viendoHistorial={viendoHistorial} handleAbrirCrearNuevoPrestamo={handleAbrirCrearNuevoPrestamo}/>
       </div>
-      <div id="probandoEncerrarDivLista" className='w-[73rem] shadow-interno bg-[#333333] rounded-1 h-[33rem]'>
+      <div id="probandoEncerrarDivLista" className={`w-[73rem] shadow-interno bg-[#333333] rounded-1 h-[33rem] ${viendoHistorial ? "my-4" : "my-0"} }`}>
         <div id="divLista" className='w-11/12 overflow-y-auto bg-transparent rounded-1 h-[33rem]'> {/*Después subir por que eran 33 rem*/}
           <ListaOHistorial/>
         </div>
       </div>
     </div>
-    <MenuBoton3Rayas/>
+    <MenuBoton3Rayas obtenerHistorial={() => obtenerHistorial()} obtenerPrestamos={() => obtenerPrestamos()}/>
     <ConfirmarFinalizarPrestamo isOpen={confirmarFinalizacionIsOpen} index={indexConfirmarFinalizacion}/>
     <VentanaNuevoPrestamo isOpen={ventanaNuevoPrestamoIsOpen}/>
+    <VentanaLeerMas/>
   </>
   )
 }

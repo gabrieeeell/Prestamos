@@ -20,8 +20,11 @@ module.exports = {
       translate: {
         '7.5rem': '7.5rem', 
       },
+      lineClamp: {
+        4: '4',
+      },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/line-clamp'),],
 }
 
