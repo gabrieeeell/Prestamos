@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import axios from "axios";
@@ -38,12 +38,14 @@ const BotonNuevoPrestamo = ({viendoHistorial, handleAbrirCrearNuevoPrestamo} : {
   
     useEffect(() => {
       const menuDiv = document.getElementById("menu3Rayas");
-      if (menuIsAbierto == true) {
-        menuDiv.classList.remove('translate-x-[7.5rem]')
-      } else {
-        menuDiv.classList.add('translate-x-[7.5rem]')
+      if (menuDiv) {
+        if (menuIsAbierto) {
+          menuDiv.classList.remove('translate-x-[7.5rem]');
+        } else {
+          menuDiv.classList.add('translate-x-[7.5rem]');
+        }
       }
-    }, [menuIsAbierto])
+    }, [menuIsAbierto]);
   
 
     return (
@@ -382,16 +384,16 @@ const Lista = () => {
   ]
 
   const selectFechaLimiteOAcumulativo = (event:SingleValue<{label:string;value:string}>,) => {
+    if (event){
+      if (event.value == "Fecha limite") {
 
-    if (event.value == "Fecha limite") {
+        setFechaLimiteOAcumulativoSelected("Fecha limite")
 
-      setFechaLimiteOAcumulativoSelected("Fecha limite")
+      } else if (event.value == "Acumulativo") {
 
-    } else if (event.value == "Acumulativo") {
+        setFechaLimiteOAcumulativoSelected("Acumulativo")
 
-      setFechaLimiteOAcumulativoSelected("Acumulativo")
-
-    }
+      }}
   }
 
   // useState para guardar lo que se ponga en el Nombre
@@ -431,8 +433,7 @@ const Lista = () => {
     cadaCuantosDiasAumenta:number,
     acumulacionFija:number,
     acumulacionPorcentual:number,
-    detallesNuevoPrestamo:string,
-    fechaAntigua:string,   //Esta es la que se selecciona cuando se tiene activado volver a calcular prestamo
+    detallesNuevoPrestamo:string,   //Esta es la que se selecciona cuando se tiene activado volver a calcular prestamo
 
   ) {
     if (detallesNuevoPrestamo == "") {
@@ -523,9 +524,8 @@ const Lista = () => {
       cadaCuantosDiasAumenta:number,
       acumulacionFija:number,
       acumulacionPorcentual:number,
-      detallesNuevoPrestamo:string,
-      fechaAntigua:string,){
-        handleCrearOActualizar(nombrePrestamo,tipoCobro,fechaLimitePrestamo,diasParaDevolucion,cobroFinal,opcionCobroFinal,cobroInicial,cadaCuantosDiasAumenta,acumulacionFija,acumulacionPorcentual,detallesNuevoPrestamo,fechaAntigua)
+      detallesNuevoPrestamo:string,){
+        handleCrearOActualizar(nombrePrestamo,tipoCobro,fechaLimitePrestamo,diasParaDevolucion,cobroFinal,opcionCobroFinal,cobroInicial,cadaCuantosDiasAumenta,acumulacionFija,acumulacionPorcentual,detallesNuevoPrestamo)
         nombreObligatorio()
       }
 
@@ -578,7 +578,7 @@ const Lista = () => {
 
           <div className='absolute flex flex-row justify-center ml-[33%] items-center gap-4 mr-5 bottom-0'>
             <div className="divBotonCrearNuevoPrestamo">
-              <button className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => handleCrear(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamoString,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual,detallesNuevoPrestamo,fechaAntiguaString)}>{textoBotonCrearOActualizar()}</button>
+              <button className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2" onClick={() => handleCrear(nombreNuevoPrestamo,fechaLimiteOAcumulativoSelected,fechaNuevoPrestamoString,diasParaLaDevolucion,cobro,aumentarCobroIsOpen,cobroInicial,cadaCuantosDias,aumentoFijo,aumentoPorcentual,detallesNuevoPrestamo)}>{textoBotonCrearOActualizar()}</button>
             </div>        
               <button onClick={() => handleCancelarPrestamo()} id="botonCancelarNuevoPrestamo" type="button" className="text-white border border-[#313131] bg-[#272727] hover:bg-[#2e2e2e] focus:bg-[#303030] font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2">Cancelar</button>
             </div>
@@ -645,16 +645,16 @@ const Lista = () => {
 
   const selectFijoOAumentar = (event:SingleValue<{label:string;value:string}>,) => {
 
-    if (event.value == "Dejar cobro fijo") {
+    if (event){
+      if (event.value == "Dejar cobro fijo") {
 
-      setAumentarCobroIsOpen("Dejar cobro fijo")
+        setAumentarCobroIsOpen("Dejar cobro fijo")
 
-    } else if (event.value == "Aumentar cobro") {
+      } else if (event.value == "Aumentar cobro") {
 
-      setAumentarCobroIsOpen("Aumentar cobro")
+        setAumentarCobroIsOpen("Aumentar cobro")
 
-    }
-
+      }}
   }
 
   function handleCambiarOrden(event:SingleValue<{label:string;value:string}>,){
@@ -792,7 +792,7 @@ const Lista = () => {
       </div>
       <div id="probandoEncerrarDivLista" className={`w-[73rem] shadow-interno bg-[#333333] rounded-1 h-[33rem] ${viendoHistorial ? "my-4" : "my-0"} }`}>
         <div id="divLista" className='w-11/12 overflow-y-auto bg-transparent rounded-1 h-[33rem]'> {/*Después subir por que eran 33 rem*/}
-          <div className='ml-5 flex w-[30rem] flex-row h-[10%] items-center'>
+          <div className='ml-5 mt-1 flex w-[30rem] flex-row h-[8%] items-center'>
               <label htmlFor='selectOrden' className='font-semibold text-[#bebebe]'>Ordenar por:</label>
               <Select isSearchable={false} id="selectOrden" options={opcionesOrdenarPor} onChange={(event) => handleCambiarOrden(event)} styles={ordenarPorStyles} defaultValue={{label:ordenarPor,value:ordenarPor}}/>
           </div>

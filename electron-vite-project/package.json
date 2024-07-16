@@ -3,6 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+    "start": "vite",
+    "start-backend": "cd.. uvicorn mainPrestamos:app --reload cd cd ",
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
