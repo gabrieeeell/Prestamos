@@ -11,6 +11,24 @@
         "Cada cuantos dias aumenta": 365,
         "Acumulaci\u00f3n fija": 1,
         "Acumulaci\u00f3n porcentual": 0,
-        "Detalles": "Detalles del prestamo"
+        "Detalles": "Detalles del prestamo",
+        "Fecha eliminaci\u00f3n": "2024-07-18",
+        "Dias para borrarse": 14
+    },
+    {
+        "_id": "315af54e2a9147ad8756673e",
+        "Nombre": "borrarr",
+        "Tipo cobro": "Fecha limite",
+        "Fecha limite": "2024-07-18",
+        "Cobro final": 1,
+        "Opci\u00f3n cobro final": "Dejar cobro fijo",
+        "Fecha inical": "2024-07-18",
+        "Cobro inical": 0,
+        "Cada cuantos dias aumenta": 1,
+        "Acumulaci\u00f3n fija": 0,
+        "Acumulaci\u00f3n porcentual": 0,
+        "Detalles": "1",
+        "Fecha eliminaci\u00f3n": "2024-07-18",
+        "Dias para borrarse": 14
     }
 ]

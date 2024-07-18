@@ -14,6 +14,21 @@ import {colorStyles , ordenarPorStyles} from './styles/select.tsx'
 import BackIcon from './assets/back.tsx';
 import PrestamoIcon from './assets/prestamoIcon.tsx';
 
+const CobroElemento = ({actualizandoPrestamo,fechaLimiteOAcumulativoSelected,cobroActual,cobro,setCobroActual,setCobro}:{actualizandoPrestamo:any,fechaLimiteOAcumulativoSelected:any,cobroActual:any,cobro:any,setCobroActual:any,setCobro:any}) => {
+  if (actualizandoPrestamo == true && fechaLimiteOAcumulativoSelected == "Fecha limite" && cobroActual == cobro) return (
+    <div className='flex flex-col w-[50%]'>
+      <label htmlFor="inputCobro" className="block text-sm mb-1 font-medium text-[white]">Cobro:</label>
+      <input type="number" defaultValue={cobroActual} onBlur={(event) => setCobroActual(Number(event.target.value))} id="inputCobro" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="" />
+    </div>
+  )
+  return (
+    <div className='flex flex-col w-[50%]'>
+      <label htmlFor="inputCobro" className="block text-sm mb-1 font-medium text-[white]">Cobro:</label>
+      <input type="number" defaultValue={cobro} onBlur={(event) => setCobro(Number(event.target.value))} id="inputCobro" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="" />
+    </div>
+  )
+}
+
 const BotonNuevoPrestamo = ({viendoHistorial, handleAbrirCrearNuevoPrestamo} : {viendoHistorial : any, handleAbrirCrearNuevoPrestamo : any}) => {
 
   if (viendoHistorial == false)  return (
@@ -606,21 +621,6 @@ const Lista = () => {
     setFechaAntigua(fecha)
   }
 
-  const CobroElemento = () => {
-    if (actualizandoPrestamo == true && fechaLimiteOAcumulativoSelected == "Fecha limite" && cobroActual == cobro) return (
-      <div className='flex flex-col w-[50%]'>
-        <label htmlFor="inputCobro" className="block text-sm mb-1 font-medium text-[white]">Cobro:</label>
-        <input type="number" defaultValue={cobroActual} value={cobroActual} onBlur={(event) => setCobroActual(Number(event.target.value))} id="inputCobro" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="" />
-      </div>
-    )
-    return (
-      <div className='flex flex-col w-[50%]'>
-        <label htmlFor="inputCobro" className="block text-sm mb-1 font-medium text-[white]">Cobro:</label>
-        <input type="number" defaultValue={cobro} onBlur={(event) => setCobro(Number(event.target.value))} id="inputCobro" className="w-[95%] bg-[#272727] border text-sm rounded-lg  block p-2.5 focus:outline-none text-[#bebebe] border-[#3d3d3d] focus:border-[#727272] focus:ring-[white]" placeholder="" />
-      </div>
-    )
-  }
-
   const separarFechaAntiguaStringYDate = (fecha:Date) => {
     setFechaAntiguaString(format(fecha,"dd-MM-yyyy"))
     setFechaAntigua(fecha)
@@ -699,7 +699,7 @@ const Lista = () => {
             <label htmlFor="inputODias" className="block text-sm font-medium text-[white]">días</label>
           </div>
           <div className='flex flex-row w-[100%] mt-5'>
-            <CobroElemento/>
+            <CobroElemento actualizandoPrestamo={actualizandoPrestamo} fechaLimiteOAcumulativoSelected={fechaLimiteOAcumulativoSelected} cobroActual={cobroActual} cobro={cobro} setCobroActual={setCobroActual} setCobro={setCobro}/>
             <div className='flex flex-col w-[50%]'>
               <label htmlFor='selectOpcionAlPasarse' className="block mb-1 text-sm font-medium text-[white]">Acción al pasarse la fecha:</label>
               <Select isSearchable={false} id='selectOpcionAlPasarse' options={opcionesFijoOAumentar} onChange={(event) => selectFijoOAumentar(event)} styles={colorStyles} defaultValue={{label:aumentarCobroIsOpen,value:aumentarCobroIsOpen}}/>
