@@ -11,3 +11,4 @@ yarn add react-select
 npm install -D tailwindcss postcss-cli autoprefixer
 
 npx tailwindcss init -p
+

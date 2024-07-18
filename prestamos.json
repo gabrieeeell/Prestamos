@@ -1,0 +1,16 @@
+[
+    {
+        "_id": "315af54e2a9147ad8756673e",
+        "Nombre": "Nombre del prestamo",
+        "Tipo cobro": "Fecha limite",
+        "Fecha limite": "2024-08-17",
+        "Cobro final": 19,
+        "Opci\u00f3n cobro final": "Aumentar cobro",
+        "Fecha inical": "2024-07-18",
+        "Cobro inical": 0,
+        "Cada cuantos dias aumenta": 365,
+        "Acumulaci\u00f3n fija": 1,
+        "Acumulaci\u00f3n porcentual": 0,
+        "Detalles": "Detalles del prestamo"
+    }
+]

@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from datetime import datetime, timedelta
-from db.client import dbClient
-from bson import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
+import json
+import uuid
+
+uuid_obj = uuid.uuid4()
 
 app = FastAPI()
 
@@ -15,17 +17,10 @@ app.add_middleware(
 )
 
 """Orden"""
-#Cuando se aprete crear prestamo, que todos los states vuelvan como a su estado "orginal" osea sin nada
-#El boton de leer mas
 """Ideas"""
-#Un indicativo de cuantos dias faltan para que se acumule denuevo(?
 #Cuando un prestamo se pasa de su fecha de devolución, este cambie de color
 #Botones de info o alguna forma en que el usuario pueda ententender como funciona cada cosa
-#Haya una parte de configuración del prestamo que te deje cambiar el interes, lo que pasa cuando se vence el plazo, etc, ->
-#-> una parte para cambiar el cobro a uno fijo en el momento, poner que se deje de acumular a partir de ahora (esas 2 ideas deberian ir)
-#Cada prestamo deberia tener un ticket para que desaparezca, una vez se aprete el ticket, estos se deberian ir a un historial, que estara
-#-> en las 3 rayas
-#Los prestamos se deberian ordenar por fecha limite, dias desde que se empezo a acumular, cobro
+
 
 
 fechaActual = datetime.now().date()
@@ -45,6 +40,9 @@ def datetimeToDias(fechaLimite):
                 break
     return resultado
 
+
+def buscar_por_id(lista, id_buscado):
+    return next((item for item in lista if item["_id"] == id_buscado), None)
 
 def diasRestantes (tipoCobro,opcionCobroFinal,fechaLimite):
 
@@ -127,35 +125,43 @@ async def insertarMonto(
     fechaInicial = str(fechaActual)
 
     prestamoDict = {
+        "_id":uuid_obj.hex[:24],
         "Nombre":nombrePrestamo, "Tipo cobro":tipoCobro, "Fecha limite":fechaLimitePrestamo, "Cobro final":cobroFinal, "Opción cobro final":opcionCobroFinal,"Fecha inical":fechaInicial,
         "Cobro inical":cobroInicial,"Cada cuantos dias aumenta":cadaCuantosDiasAumenta,"Acumulación fija":acumulacionFija,"Acumulación porcentual":acumulacionPorcentual,"Detalles":detallesNuevoPrestamo}
 
-    dbClient.local.prestamos.insert_one(prestamoDict)
+    with open("prestamos.json","r") as prestamosFile:
+        prestamos = json.load(prestamosFile)
+
+    prestamos.append(prestamoDict)
+
+    with open("prestamos.json","w") as prestamosFile:
+        json.dump(prestamos,prestamosFile,indent=4)
 
     return nombrePrestamo, fechaLimitePrestamo
 
 @app.get("/obtenerPrestamos/{ordenarPor}")
 async def obtenerDatos(ordenarPor : str):
     # Convertir ObjectId a str para cada documento
-    todosLosPrestamos = [
-        {"Nombre":prestamo["Nombre"], 
-         "_id": str(prestamo["_id"]),
-         "Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
-         "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
-                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])[0],
-         "Detalles":prestamo["Detalles"],
-         "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"]),# Convertir ObjectId a str
-         "Cobro inical":prestamo["Cobro inical"],
-         "Tipo cobro":prestamo["Tipo cobro"],
-         "Accion al pasar fecha":prestamo["Opción cobro final"],
-         "Cada cuantos dias aumenta":prestamo["Cada cuantos dias aumenta"],
-         "Acumulación fija":prestamo["Acumulación fija"],
-         "Acumulación porcentual":prestamo["Acumulación porcentual"],
-         "Cobro final":prestamo["Cobro final"],
-         "Dias para aumento": calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
-                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])[1]}  
-        for prestamo in dbClient.local.prestamos.find()
-    ]
+    with open("prestamos.json","r") as prestamos:
+        todosLosPrestamos = [
+            {"Nombre":prestamo["Nombre"], 
+            "_id": str(prestamo["_id"]),
+            "Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
+            "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
+                                prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])[0],
+            "Detalles":prestamo["Detalles"],
+            "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"]),# Convertir ObjectId a str
+            "Cobro inical":prestamo["Cobro inical"],
+            "Tipo cobro":prestamo["Tipo cobro"],
+            "Accion al pasar fecha":prestamo["Opción cobro final"],
+            "Cada cuantos dias aumenta":prestamo["Cada cuantos dias aumenta"],
+            "Acumulación fija":prestamo["Acumulación fija"],
+            "Acumulación porcentual":prestamo["Acumulación porcentual"],
+            "Cobro final":prestamo["Cobro final"],
+            "Dias para aumento": calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
+                                prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])[1]}  
+            for prestamo in json.load(prestamos)
+        ]
 
     todosLosPrestamos = ordenarPrestamos(todosLosPrestamos,ordenarPor)
 
@@ -163,9 +169,22 @@ async def obtenerDatos(ordenarPor : str):
 
 @app.delete("/borrarPrestamo/{id}")
 async def borrarPrestamo(id : str):
-    dbClient.local.historial.insert_one(dbClient.local.prestamos.find_one({"_id": ObjectId(id)}))
-    dbClient.local.historial.find_one_and_update({"_id": ObjectId(id)},{'$set':{'Fecha eliminación':str(fechaActual),"Dias para borrarse":14}})
-    dbClient.local.prestamos.find_one_and_delete({"_id": ObjectId(id)})
+    with open("prestamos.json","r") as prestamos:
+        prestamosLista = json.load(prestamos)
+        prestamoBorrado = buscar_por_id(prestamosLista,id)
+        prestamosLista.remove(prestamoBorrado)
+
+    with open("prestamos.json","w") as prestamos:
+        json.dump(prestamosLista,prestamos,indent=4)
+
+    with open("historial.json","r") as historial:
+        prestamosHistorial = json.load(historial)
+        prestamoBorrado['Fecha eliminación'],prestamoBorrado['Dias para borrarse'] = str(fechaActual), 14
+        prestamosHistorial.append(prestamoBorrado)
+
+    with open("historial.json","w") as historial:
+        json.dump(prestamosHistorial,historial,indent=4)
+
     return None
 
 @app.put(
@@ -175,19 +194,24 @@ async def actualizarPrestamos(id : str, nombre : str,tipoCobro : str,cobroFinal:
 
     fechaLimite = str((datetime.strptime(fechaLimite, "%d-%m-%Y") + timedelta(days=diasParaDevolucion)).date())
     #ChatGPT MVP
-    dbClient.local.prestamos.find_one_and_update({"_id": ObjectId(id)},{ 
-                                                    '$set': { "Nombre" : nombre,
-                                                             "Tipo cobro":tipoCobro,
-                                                             "Fecha limite":fechaLimite,
-                                                             "Cobro final":cobroFinal,
-                                                             "Opción cobro final":opcionCobroFinal,
-                                                             "Cobro inical":cobroInicial,
-                                                             "Cada cuantos dias aumenta":cadaCuantosDias,
-                                                             "Acumulación fija":acumulacionFija,
-                                                             "Acumulación porcentual":acumulacionPorcentual,
-                                                             "Fecha inical":fechaLimite,
-                                                             "Detalles":detalles},
-                                                     })
+    with open("prestamos.json","r") as prestamos:
+        prestamosLista = json.load(prestamos)
+        prestamoActualizado = buscar_por_id(prestamosLista,id)
+        prestamosLista[prestamosLista.index(prestamoActualizado)].update({ "Nombre" : nombre,
+                                                                "Tipo cobro":tipoCobro,
+                                                                "Fecha limite":fechaLimite,
+                                                                "Cobro final":cobroFinal,
+                                                                "Opción cobro final":opcionCobroFinal,
+                                                                "Cobro inical":cobroInicial,
+                                                                "Cada cuantos dias aumenta":cadaCuantosDias,
+                                                                "Acumulación fija":acumulacionFija,
+                                                                "Acumulación porcentual":acumulacionPorcentual,
+                                                                "Fecha inical":fechaLimite,
+                                                                "Detalles":detalles},
+                                                             )
+    with open("prestamos.json","w") as prestamos:
+        json.dump(prestamosLista,prestamos,indent=4)
+    
     return None
                                                             #Solo puede seleccionar fechas futuras
 @app.put(
@@ -197,51 +221,66 @@ async def actualizarPrestamosParcialmente(id : str, nombre : str,tipoCobro : str
     
     fechaLimite = str((datetime.strptime(fechaLimite, "%d-%m-%Y") + timedelta(days=diasParaDevolucion)).date())
 
-    dbClient.local.prestamos.find_one_and_update({"_id": ObjectId(id)},{ 
-                                                    '$set': { "Nombre" : nombre,
-                                                             "Tipo cobro":tipoCobro,
-                                                             "Fecha limite":fechaLimite,
-                                                             "Cobro final":cobroActual,
-                                                             "Opción cobro final":opcionCobroFinal,
-                                                             "Cobro inical":cobroActual,
-                                                             "Cada cuantos dias aumenta":cadaCuantosDias,
-                                                             "Acumulación fija":acumulacionFija,
-                                                             "Acumulación porcentual":acumulacionPorcentual,
-                                                             "Fecha inical":str(fechaActual),
-                                                             "Detalles":detalles},
-                                                     })
+    with open("prestamos.json","r") as prestamos:
+        prestamosLista = json.load(prestamos)
+        prestamoActualizado = buscar_por_id(prestamosLista,id)
+        prestamosLista[prestamosLista.index(prestamoActualizado)].update({ "Nombre" : nombre,
+                                                                            "Tipo cobro":tipoCobro,
+                                                                            "Fecha limite":fechaLimite,
+                                                                            "Cobro final":cobroActual,
+                                                                            "Opción cobro final":opcionCobroFinal,
+                                                                            "Cobro inical":cobroActual,
+                                                                            "Cada cuantos dias aumenta":cadaCuantosDias,
+                                                                            "Acumulación fija":acumulacionFija,
+                                                                            "Acumulación porcentual":acumulacionPorcentual,
+                                                                            "Fecha inical":str(fechaActual),
+                                                                            "Detalles":detalles},
+                                                                            )
+        print(prestamosLista)
+    with open("prestamos.json","w") as prestamos:
+        json.dump(prestamosLista,prestamos,indent=4)
+
     return None
 
 @app.delete("/obtenerHistorial")                                                   #Que un @get borre datos, es una mala practica
 async def obtenerHistorial():
-    prestamosDelHistorial = [
-        {"Fecha eliminación":prestamo["Fecha eliminación"],
-         "_id":str(prestamo["_id"])}
-        for prestamo in dbClient.local.historial.find()
-    ]
+    with open("historial.json","r") as historial:
+        prestamosDelHistorial = json.load(historial)
     for prestamo in prestamosDelHistorial:
         if int(datetimeToDias(prestamo["Fecha eliminación"])) < -14:
-            dbClient.local.historial.find_one_and_delete({"_id":ObjectId(prestamo["_id"])})
+            prestamosDelHistorial.remove(prestamo)
         else:
-            dbClient.local.historial.find_one_and_update({"_id":ObjectId(prestamo["_id"])},{
-                "$set":{"Dias para borrarse":14 - abs(int(datetimeToDias(prestamo["Fecha eliminación"])))}})
+            prestamosDelHistorial[prestamosDelHistorial.index(prestamo)]["Dias para borrarse"] = 14 - abs(int(datetimeToDias(prestamo["Fecha eliminación"])))
     
-    todosLosPrestamos = [
-        {"Nombre":prestamo["Nombre"], 
-         "_id": str(prestamo["_id"]),
-         "Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
-         "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
-                               prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])[0],
-         "Detalles":prestamo["Detalles"],
-         "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"]),# Convertir ObjectId a str
-         "Dias para borrarse":prestamo["Dias para borrarse"]}  
-        for prestamo in dbClient.local.historial.find()]
+    with open("historial.json","w") as historial:
+        json.dump(prestamosDelHistorial,historial,indent=4)
+
+    with open("historial.json","r") as historial:
+        todosLosPrestamos = [
+            {"Nombre":prestamo["Nombre"], 
+            "_id": str(prestamo["_id"]),
+            "Dias restantes":diasRestantes(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Fecha limite"]),
+            "Cobro":calcularCobro(prestamo["Tipo cobro"],prestamo["Opción cobro final"],prestamo["Cobro final"],prestamo["Cada cuantos dias aumenta"],prestamo["Fecha inical"],prestamo["Fecha limite"],
+                                prestamo["Cobro inical"],prestamo["Acumulación fija"],prestamo["Acumulación porcentual"])[0],
+            "Detalles":prestamo["Detalles"],
+            "Fecha limite":fechaLimiteOGuion(prestamo["Tipo cobro"],prestamo["Fecha limite"]),# Convertir ObjectId a str
+            "Dias para borrarse":prestamo["Dias para borrarse"]}  
+            for prestamo in json.load(historial)]
 
     return todosLosPrestamos
     
 @app.delete("/recuperarPrestamo/{id}")
 async def recuperarPrestamo(id : str):
-    dbClient.local.prestamos.insert_one(dbClient.local.historial.find_one({"_id":ObjectId(id)}))
-    dbClient.local.historial.find_one_and_delete({"_id":ObjectId(id)})
+    with open("historial.json","r") as historial:
+        listaHistorial = json.load(historial)
+        prestamoRecuperado = buscar_por_id(listaHistorial,id)
+        listaHistorial.remove(prestamoRecuperado)
+    with open("historial.json","w") as historial:
+        json.dump(listaHistorial,historial,indent=4)
+    with open("prestamos.json","r") as prestamos:
+        prestamosLista = json.load(prestamos) + [prestamoRecuperado]
+    with open("prestamos.json","w") as prestamos:
+        json.dump(prestamosLista,prestamos,indent=4)
+
     return None
     

@@ -8,7 +8,32 @@
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.miapp",
+    "productName": "MiApp",
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "main.js"
+    ],
+    "extraResources": [
+      {
+        "from": "../mainPrestamos.py",
+        "to": "api/mainPrestamos.py"
+      }
+    ],
+    "extraFiles": [
+      {
+        "from": "../mainPrestamos.py",
+        "to": "api/mainPrestamos.py"
+      }
+    ],
+    "directories": {
+      "buildResources": "build"
+    }
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
@@ -36,7 +61,7 @@
     "@vitejs/plugin-react": "^4.0.4",
     "autoprefixer": "^10.4.19",
     "electron": "^26.1.0",
-    "electron-builder": "^24.6.4",
+    "electron-builder": "^24.13.3",
     "eslint": "^8.48.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
