@@ -1,7 +1,6 @@
 altgraph==0.17.4
 annotated-types==0.6.0
 anyio==4.3.0
-bson==0.5.10
 certifi==2024.2.2
 click==8.1.7
 colorama==0.4.6
@@ -18,16 +17,12 @@ Jinja2==3.1.4
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
-motor==3.5.1
 orjson==3.10.3
 packaging==24.1
 pefile==2023.2.7
 pydantic==2.7.1
 pydantic_core==2.18.2
 Pygments==2.18.0
-pyinstaller==6.9.0
-pyinstaller-hooks-contrib==2024.7
-pymongo==4.7.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-multipart==0.0.9
