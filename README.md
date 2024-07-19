@@ -3,4 +3,6 @@ Para usarlo:
 2-Con la terminal abierta en la misma carpeta poner "uvicorn mainPrestamos:app --reload" para iniciar la api
 3-Luego "cd electron-vite-project" y "npm run dev"
 
-![Imagen del programa](image.png)
+![Lista de prestamos](image.png)
+
+![Ventana para crear un prestamo](CrearPrestamo.png)
