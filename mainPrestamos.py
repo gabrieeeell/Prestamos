@@ -4,8 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 import uuid
 
-uuid_obj = uuid.uuid4()
-
 app = FastAPI()
 
 app.add_middleware(
@@ -125,7 +123,7 @@ async def insertarMonto(
     fechaInicial = str(fechaActual)
 
     prestamoDict = {
-        "_id":uuid_obj.hex[:24],
+        "_id":uuid.uuid4().hex,
         "Nombre":nombrePrestamo, "Tipo cobro":tipoCobro, "Fecha limite":fechaLimitePrestamo, "Cobro final":cobroFinal, "Opción cobro final":opcionCobroFinal,"Fecha inical":fechaInicial,
         "Cobro inical":cobroInicial,"Cada cuantos dias aumenta":cadaCuantosDiasAumenta,"Acumulación fija":acumulacionFija,"Acumulación porcentual":acumulacionPorcentual,"Detalles":detallesNuevoPrestamo}
 
@@ -224,6 +222,7 @@ async def actualizarPrestamosParcialmente(id : str, nombre : str,tipoCobro : str
     with open("prestamos.json","r") as prestamos:
         prestamosLista = json.load(prestamos)
         prestamoActualizado = buscar_por_id(prestamosLista,id)
+        print(prestamoActualizado)
         prestamosLista[prestamosLista.index(prestamoActualizado)].update({ "Nombre" : nombre,
                                                                             "Tipo cobro":tipoCobro,
                                                                             "Fecha limite":fechaLimite,
@@ -236,7 +235,6 @@ async def actualizarPrestamosParcialmente(id : str, nombre : str,tipoCobro : str
                                                                             "Fecha inical":str(fechaActual),
                                                                             "Detalles":detalles},
                                                                             )
-        print(prestamosLista)
     with open("prestamos.json","w") as prestamos:
         json.dump(prestamosLista,prestamos,indent=4)
 

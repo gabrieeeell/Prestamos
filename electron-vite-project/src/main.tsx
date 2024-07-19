@@ -456,19 +456,19 @@ const Lista = () => {
     }
     if (actualizandoPrestamo == false) {
       var url = `http://127.0.0.1:8000/insertarMonto/${nombrePrestamo}/${tipoCobro}/${fechaLimitePrestamo}/${diasParaDevolucion}/${cobroFinal}/${opcionCobroFinal}/${cobroInicial}/${cadaCuantosDiasAumenta}/${acumulacionFija}/${acumulacionPorcentual}/${detallesNuevoPrestamo}`
-      url = url.replace("?","%3F")
+      url = url.replace(/\?/g, "%3F")
       await axios.post(
         url)
     } else {
       if (volverACalcularCobroState == true) {
         var url = `http://127.0.0.1:8000/actualizarPrestamo/${idActualizar}/${nombrePrestamo}/${tipoCobro}/${fechaAntiguaString}/${diasParaDevolucion}/${cobroFinal}/${opcionCobroFinal}/${cobroInicial}/${cadaCuantosDiasAumenta}/${acumulacionFija}/${acumulacionPorcentual}/${detallesNuevoPrestamo}`
-        url = url.replace("?","%3F")
+        url = url.replace(/\?/g, "%3F")
         await axios.put(
           url
         )
       } else {
         var url = `http://127.0.0.1:8000/actualizarPrestamoParcialmente/${idActualizar}/${nombrePrestamo}/${tipoCobro}/${fechaNuevoPrestamoString}/${diasParaDevolucion}/${cobroActual}/${opcionCobroFinal}/${cadaCuantosDiasAumenta}/${acumulacionFija}/${acumulacionPorcentual}/${detallesNuevoPrestamo}`
-        url = url.replace("?","%3F")
+        url = url.replace(/\?/g, "%3F")
         await axios.put(url)
       }
     }

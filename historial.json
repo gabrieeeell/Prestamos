@@ -1,1 +1,50 @@
-[]
+[
+    {
+        "_id": "f196219387874f329abf0724ae48143d",
+        "Nombre": "???",
+        "Tipo cobro": "Fecha limite",
+        "Fecha limite": "2024-07-19",
+        "Cobro final": 777,
+        "Opci\u00f3n cobro final": "Dejar cobro fijo",
+        "Fecha inical": "2024-07-19",
+        "Cobro inical": 777,
+        "Cada cuantos dias aumenta": 1,
+        "Acumulaci\u00f3n fija": 0,
+        "Acumulaci\u00f3n porcentual": 0,
+        "Detalles": "prueba",
+        "Fecha eliminaci\u00f3n": "2024-07-19",
+        "Dias para borrarse": 14
+    },
+    {
+        "_id": "50216ef73e6a4b76ba3a555364a6594a",
+        "Nombre": "qutal",
+        "Tipo cobro": "Fecha limite",
+        "Fecha limite": "2024-07-19",
+        "Cobro final": 1123,
+        "Opci\u00f3n cobro final": "Dejar cobro fijo",
+        "Fecha inical": "2024-07-19",
+        "Cobro inical": 0,
+        "Cada cuantos dias aumenta": 1,
+        "Acumulaci\u00f3n fija": 0,
+        "Acumulaci\u00f3n porcentual": 0,
+        "Detalles": "asd213",
+        "Fecha eliminaci\u00f3n": "2024-07-19",
+        "Dias para borrarse": 14
+    },
+    {
+        "_id": "7421e27ca12b457d9aa72f775afb4c2b",
+        "Nombre": "??",
+        "Tipo cobro": "Fecha limite",
+        "Fecha limite": "2024-07-19",
+        "Cobro final": 1,
+        "Opci\u00f3n cobro final": "Dejar cobro fijo",
+        "Fecha inical": "2024-07-19",
+        "Cobro inical": 1,
+        "Cada cuantos dias aumenta": 1,
+        "Acumulaci\u00f3n fija": 0,
+        "Acumulaci\u00f3n porcentual": 0,
+        "Detalles": "asd",
+        "Fecha eliminaci\u00f3n": "2024-07-19",
+        "Dias para borrarse": 14
+    }
+]

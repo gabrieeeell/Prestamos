@@ -7,6 +7,8 @@
     "start-backend": "cd.. uvicorn mainPrestamos:app --reload cd cd ",
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
+    "build:electron": "electron-builder",
+    "build:renderer": "vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "electron:build": "electron-builder"
@@ -15,21 +17,10 @@
     "appId": "com.miapp",
     "productName": "MiApp",
     "files": [
-      "dist/**/*",
-      "node_modules/**/*",
-      "main.js"
+      "dist-electron/"
     ],
     "extraResources": [
-      {
-        "from": "../mainPrestamos.py",
-        "to": "api/mainPrestamos.py"
-      }
-    ],
-    "extraFiles": [
-      {
-        "from": "../mainPrestamos.py",
-        "to": "api/mainPrestamos.py"
-      }
+      "resources/"
     ],
     "directories": {
       "buildResources": "build"
